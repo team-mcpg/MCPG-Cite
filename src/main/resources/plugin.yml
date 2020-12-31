@@ -1,3 +1,4 @@
-name: cite
+name: MCPG-Cite
 main: fr.milekat.cite.MainCite
 version: 1.0
+depend: [MCPG-Core]
