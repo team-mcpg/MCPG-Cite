@@ -6,14 +6,17 @@ repositories {
     mavenCentral()
     jcenter()
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' }
+    maven { url = 'https://oss.sonatype.org/content/groups/public' }
+    maven { url = 'https://jitpack.io' }
     maven { url = 'https://masecla.dev/nexus/repository/maven-snapshots' }
+    maven { url = 'https://repo.dmulloy2.net/nexus/repository/public' }
 }
 
 compileJava.options.encoding = 'UTF-8'
 
 jar {
     manifest {
-        attributes "Main-Class": "fr.milekat.cite.MainCite"
+        attributes "Main-Class": "fr.milekat.MCPG_Cite.MainCite"
     }
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
@@ -22,6 +25,10 @@ jar {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    //  Core dependencies
     compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.16.4-R0.1-SNAPSHOT'
-    compileOnly group: 'masecla', name: 'VillagerGUIApi', version: '0.0.1-20200712.201012-2'
+    compileOnly group: 'com.github.tutur1004', name: 'MCPG-Core', version: 'main-SNAPSHOT'
+    //  Plugin dependencies
+    compileOnly group: 'net.jitse', name: 'npclib-api', version: '2.11.1-SNAPSHOT'
+    compileOnly group: 'masecla', name: 'VillagerGUIApi', version: '0.0.1-20200910.053224-4'
 }
