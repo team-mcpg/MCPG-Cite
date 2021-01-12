@@ -1,3 +1,8 @@
-name: cite
-main: fr.milekat.cite.MainCite
+name: MCPG-Cite
+main: fr.milekat.MCPG_Cite.MainCite
 version: 1.0
+author: MileKat
+depend: [MCPG-Core]
+commands:
+  npc:
+    usage: "/npc help - For help."

@@ -1,4 +1,4 @@
-package fr.milekat.cite.npc.object;
+package fr.milekat.MCPG_Cite.npc.object;
 
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;

@@ -1,33 +1,34 @@
-package fr.milekat.cite.npc;
+package fr.milekat.MCPG_Cite.npc;
 
+import fr.milekat.MCPG_Cite.MainCite;
+import fr.milekat.MCPG_Cite.npc.commands.CmdNPC;
+import fr.milekat.MCPG_Cite.npc.object.NpcDao;
+import fr.milekat.MCPG_Cite.npc.object.NpcProperties;
 import fr.milekat.MCPG_Core.MainCore;
-import fr.milekat.cite.MainCite;
-import fr.milekat.cite.npc.commands.CmdNPC;
-import fr.milekat.cite.npc.object.NpcDao;
-import fr.milekat.cite.npc.object.NpcProperties;
 import net.jitse.npclib.api.skin.MineSkinFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Morphia;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class NPCManager {
-    public static ArrayList<NpcProperties> npcs;
+    public static ArrayList<NpcProperties> npcs = new ArrayList<>();
     private final NpcDao npcdao;
 
     public NPCManager(JavaPlugin plugin) {
         //  Register NPC class into MongoDB
-        MainCore.getMongoDB().getMorphia().map(NpcProperties.class);
-        Datastore datastore = MainCore.getMongoDB().getMorphia().createDatastore(MainCore.getMongoDB().getMongoClient(), "dbName");
+        Morphia morphia = new Morphia();
+        morphia.map(NpcProperties.class);
+        Datastore datastore = morphia.createDatastore(MainCore.getMongoDB().getMongoClient(), "minecraft");
         datastore.ensureIndexes();
         npcdao = new NpcDao(NpcProperties.class, datastore);
         //  Load npcs ArrayList
         resetNPCs();
         //  Load /npc command
-        Objects.requireNonNull(plugin.getCommand("npc")).setExecutor(new CmdNPC());
+        plugin.getCommand("npc").setExecutor(new CmdNPC());
     }
 
     /**
@@ -83,9 +84,9 @@ public class NPCManager {
         MineSkinFetcher.fetchSkinFromIdAsync(npc.getSkinId(), skin -> npc.getNpc().setSkin(skin));
         npc.getNpc().create();
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (npc.isVisible()) {
+            if (npc.isVisible() && !npc.getNpc().isShown(player)) {
                 npc.getNpc().show(player);
-            } else {
+            } else if (npc.getNpc().isShown(player)) {
                 npc.getNpc().hide(player);
             }
         }

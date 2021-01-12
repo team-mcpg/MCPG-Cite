@@ -1,17 +1,19 @@
-package fr.milekat.cite.npc.commands;
+package fr.milekat.MCPG_Cite.npc.commands;
 
+import fr.milekat.MCPG_Cite.MainCite;
+import fr.milekat.MCPG_Cite.npc.NPCManager;
+import fr.milekat.MCPG_Cite.npc.object.NpcProperties;
 import fr.milekat.MCPG_Core.MainCore;
 import fr.milekat.MCPG_Core.utils.CmdUtils;
-import fr.milekat.cite.MainCite;
-import fr.milekat.cite.npc.NPCManager;
-import fr.milekat.cite.npc.object.NpcProperties;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 
 public class CmdNPC implements CommandExecutor {
     private final HashMap<CommandSender, NpcProperties> selectedNpc = new HashMap<>();
@@ -36,6 +38,7 @@ public class CmdNPC implements CommandExecutor {
                     NpcProperties npc = new NpcProperties(NPCManager.npcs.size() + 1,
                             Collections.singletonList(args[1]),13206,((Player) sender).getLocation(),true);
                     NPCManager.setNPCsetup(npc);
+                    NPCManager.npcs.add(npc);
                     selectedNpc.put(sender, npc);
                     break;
                 }
@@ -44,12 +47,15 @@ public class CmdNPC implements CommandExecutor {
                     if (args.length==2) {
                         npcid = Integer.parseInt(args[1]);
                     } else sendHelp(sender, label);
-                    int finalNpcid = npcid;
-                    Optional<NpcProperties> optionalNpc = NPCManager.npcs.stream()
-                            .filter((npcstream) -> finalNpcid == npcstream.getId())
-                            .findFirst();
-                    if (optionalNpc.isPresent()) {
-                        selectedNpc.put(sender, optionalNpc.get());
+                    NpcProperties npc = null;
+                    for (NpcProperties loopNPC: NPCManager.npcs) {
+                        if (loopNPC.getId()==npcid) {
+                            npc = loopNPC;
+                            break;
+                        }
+                    }
+                    if (npc!=null) {
+                        selectedNpc.put(sender, npc);
                     } else {
                         sender.sendMessage(MainCite.Prefix + "§cUnknow NPC id");
                     }
@@ -58,35 +64,42 @@ public class CmdNPC implements CommandExecutor {
                 case "rename": {
                     if (hasNoSelected(sender)) break;
                     selectedNpc.get(sender).setNames(new ArrayList<>(Arrays.asList(CmdUtils.getArgs(1, args).split("\\|"))));
+                    NPCManager.setNPCsetup(selectedNpc.get(sender));
                     break;
                 }
                 case "skin": {
                     if (hasNoSelected(sender)) break;
+                    if (args.length==2) {
+                        try {
+                            selectedNpc.get(sender).setSkinId(Integer.parseInt(args[1]));
+                            NPCManager.setNPCsetup(selectedNpc.get(sender));
+                        } catch (NumberFormatException exception) {
+                            sender.sendMessage(MainCore.prefix + "§cPlease, use a valid skin id from mineskin.org");
+                        }
+                    } else sendHelp(sender, label);
 
                     break;
                 }
                 case "tp": {
                     if (hasNoSelected(sender)) break;
                     ((Player) sender).teleport(selectedNpc.get(sender).getLocation());
+                    sender.sendMessage(MainCore.prefix + "§2Teleportation to " + selectedNpc.get(sender).getNames().get(0));
                     break;
                 }
                 case "move": {
                     if (hasNoSelected(sender)) break;
-                    selectedNpc.get(sender).setLocation(((Player) sender).getLocation());
-                    selectedNpc.get(sender).getNpc().setLocation(((Player) sender).getLocation());
+                    NpcProperties npc = selectedNpc.get(sender);
+                    npc.setLocation(((Player) sender).getLocation());
+                    npc.getNpc().destroy();
+                    NPCManager.setNPCsetup(npc);
                     break;
                 }
                 case "visible": {
                     if (hasNoSelected(sender)) break;
                     NpcProperties npc = selectedNpc.get(sender);
-                    npc.setVisible(Boolean.getBoolean(args[1]));
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        if (npc.isVisible()) {
-                            npc.getNpc().show(player);
-                        } else {
-                            npc.getNpc().hide(player);
-                        }
-                    }
+                    npc.setVisible(Boolean.parseBoolean(args[1]));
+                    sender.sendMessage("Visiblity: " + npc.isVisible());
+                    NPCManager.setNPCsetup(npc);
                     break;
                 }
                 default: sendHelp(sender, label);

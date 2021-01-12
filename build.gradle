@@ -16,7 +16,7 @@ compileJava.options.encoding = 'UTF-8'
 
 jar {
     manifest {
-        attributes "Main-Class": "fr.milekat.cite.MainCite"
+        attributes "Main-Class": "fr.milekat.MCPG_Cite.MainCite"
     }
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }

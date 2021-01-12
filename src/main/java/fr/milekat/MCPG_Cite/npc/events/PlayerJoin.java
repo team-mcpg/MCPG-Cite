@@ -1,7 +1,7 @@
-package fr.milekat.cite.npc.events;
+package fr.milekat.MCPG_Cite.npc.events;
 
-import fr.milekat.cite.npc.NPCManager;
-import fr.milekat.cite.npc.object.NpcProperties;
+import fr.milekat.MCPG_Cite.npc.NPCManager;
+import fr.milekat.MCPG_Cite.npc.object.NpcProperties;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;

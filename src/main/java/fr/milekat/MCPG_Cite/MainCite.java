@@ -1,6 +1,7 @@
-package fr.milekat.cite;
+package fr.milekat.MCPG_Cite;
 
-import fr.milekat.cite.npc.NPCManager;
+import fr.milekat.MCPG_Cite.npc.NPCManager;
+import fr.milekat.MCPG_Cite.npc.events.PlayerJoin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MainCite extends JavaPlugin {
@@ -10,6 +11,7 @@ public class MainCite extends JavaPlugin {
     @Override
     public void onEnable() {
         npcManager = new NPCManager(this);
+        getServer().getPluginManager().registerEvents(new PlayerJoin(), this);
     }
 
     @Override
