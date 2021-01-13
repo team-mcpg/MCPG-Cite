@@ -1,12 +1,9 @@
 package fr.milekat.MCPG_Cite.npc.object;
 
-import fr.milekat.MCPG_Core.utils.LocationParser;
+import fr.milekat.MCPG_Cite.utils.object.MongoLoc;
 import net.jitse.npclib.api.NPC;
 import org.bukkit.Location;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
-import org.mongodb.morphia.annotations.Indexed;
-import org.mongodb.morphia.annotations.Transient;
+import org.mongodb.morphia.annotations.*;
 
 import java.util.List;
 
@@ -17,20 +14,23 @@ public class NpcProperties {
     @Indexed
     private List<String> names;
     private Integer skinId;
-    private String location;
+    @Embedded
+    private MongoLoc mongoLoc;
+    @Indexed
     private boolean visible;
     @Transient
     private NPC npc;
 
-    public NpcProperties() {
-
-    }
+    /**
+     *      Method for MongoDB load
+     */
+    public NpcProperties() {}
 
     public NpcProperties(int id, List<String> names, Integer skinId, Location location, boolean visible) {
         this.id = id;
         this.names = names;
         this.skinId = skinId;
-        this.location = LocationParser.getFullString(location);
+        this.mongoLoc = new MongoLoc(location);
         this.visible = visible;
     }
 
@@ -44,7 +44,6 @@ public class NpcProperties {
 
     public void setNames(List<String> names) {
         this.names = names;
-        this.npc.setText(names);
     }
 
     public Integer getSkinId() {
@@ -56,11 +55,11 @@ public class NpcProperties {
     }
 
     public Location getLocation() {
-        return LocationParser.getFullLocation(location);
+        return mongoLoc.getLocation();
     }
 
     public void setLocation(Location location) {
-        this.location = LocationParser.getFullString(location);
+        this.mongoLoc = new MongoLoc(location);
     }
 
     public boolean isVisible() {

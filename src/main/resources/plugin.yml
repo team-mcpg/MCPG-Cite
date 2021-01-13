@@ -2,6 +2,7 @@ name: MCPG-Cite
 main: fr.milekat.MCPG_Cite.MainCite
 version: 1.0
 author: MileKat
+api-version: 1.16
 depend: [MCPG-Core]
 commands:
   npc:

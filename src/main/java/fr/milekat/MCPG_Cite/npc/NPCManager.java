@@ -2,6 +2,7 @@ package fr.milekat.MCPG_Cite.npc;
 
 import fr.milekat.MCPG_Cite.MainCite;
 import fr.milekat.MCPG_Cite.npc.commands.CmdNPC;
+import fr.milekat.MCPG_Cite.npc.events.PlayerJoin;
 import fr.milekat.MCPG_Cite.npc.object.NpcDao;
 import fr.milekat.MCPG_Cite.npc.object.NpcProperties;
 import fr.milekat.MCPG_Core.MainCore;
@@ -26,41 +27,55 @@ public class NPCManager {
         datastore.ensureIndexes();
         npcdao = new NpcDao(NpcProperties.class, datastore);
         //  Load npcs ArrayList
-        resetNPCs();
-        //  Load /npc command
-        plugin.getCommand("npc").setExecutor(new CmdNPC());
+        loadNPCs();
+        //  Register /npc command
+        plugin.getCommand("npc").setExecutor(new CmdNPC(this));
+        //  Show NPC on login
+        plugin.getServer().getPluginManager().registerEvents(new PlayerJoin(), plugin);
     }
 
     /**
-     * Load all NPC
+     *      Load all NPC
      */
-    public void resetNPCs() {
-        npcs.clear();
+    public void loadNPCs() {
+
         npcs.addAll(getNPC());
         if (npcs.size() < 1) {
-            Bukkit.getLogger().warning(MainCite.Prefix + "No NPC where loaded.");
+            Bukkit.getLogger().warning(MainCite.prefix + "No NPC where loaded.");
             return;
         }
         setNPCsetup(npcs);
     }
 
     /**
-     * Load / reload a specific NPC from MariaDB
+     *      Remove all NPC from the server
+     */
+    public void destroyNPCs() {
+        for (NpcProperties npc : npcs) {
+            if (npc.getNpc().isCreated()) {
+                npc.getNpc().destroy();
+            }
+        }
+        npcs.clear();
+    }
+
+    /**
+     *      Load / reload a specific NPC from MongoDB
      */
     public NpcProperties getNPC(Integer id) {
         return npcdao.findOne("id", id);
     }
 
     /**
-     * Load all NPC from Maria storage
-     * @return NPC loaded count
+     *      Load all NPC from MongoDB storage
+     *      @return NPC loaded count
      */
     public ArrayList<NpcProperties> getNPC() {
         return new ArrayList<>(npcdao.find().asList());
     }
 
     /**
-     *      Save a NPC object into MariaDB
+     *      Save a NPC object into MongoDB
      */
     public void saveNPC(NpcProperties npc) {
         npcdao.save(npc);
@@ -76,9 +91,12 @@ public class NPCManager {
     }
 
     /**
-     * Init the NPC (Position, Name, etc..)
+     *      Init the NPC (Position, Name, etc..)
      */
-    public static void setNPCsetup(NpcProperties npc) {
+    public void setNPCsetup(NpcProperties npc) {
+        if (npc.getNpc()!=null && npc.getNpc().isCreated()) {
+            npc.getNpc().destroy();
+        }
         npc.setNpc(MainCore.getNPCLib().createNPC(npc.getNames()));
         npc.getNpc().setLocation(npc.getLocation());
         MineSkinFetcher.fetchSkinFromIdAsync(npc.getSkinId(), skin -> npc.getNpc().setSkin(skin));
@@ -93,9 +111,9 @@ public class NPCManager {
     }
 
     /**
-     * Init all things of the NPC (Position, Name, etc..)
+     *      Init all things of the NPC (Position, Name, etc..)
      */
-    public static void setNPCsetup(ArrayList<NpcProperties> npcs) {
+    public void setNPCsetup(ArrayList<NpcProperties> npcs) {
         for (NpcProperties npc : npcs) {
             setNPCsetup(npc);
         }
