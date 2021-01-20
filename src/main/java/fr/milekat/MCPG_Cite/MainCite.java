@@ -1,19 +1,26 @@
 package fr.milekat.MCPG_Cite;
 
-import fr.milekat.MCPG_Cite.npc.NPCManager;
+import fr.milekat.MCPG_Cite.trades.TradesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MainCite extends JavaPlugin {
+    private static MainCite mainCite;
+    private TradesManager tradesManager;
     public static String prefix = "[MCPG-Cite] ";
-    private NPCManager npcManager;
 
     @Override
     public void onEnable() {
-        npcManager = new NPCManager(this);
+        mainCite = this;
+        tradesManager = new TradesManager(this);
+        tradesManager.canTrades(true);
     }
 
     @Override
     public void onDisable() {
-        npcManager.destroyNPCs();
+        tradesManager.canTrades(false);
+    }
+
+    public static MainCite getInstance() {
+        return mainCite;
     }
 }

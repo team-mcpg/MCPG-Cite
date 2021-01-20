@@ -5,5 +5,7 @@ author: MileKat
 api-version: 1.16
 depend: [MCPG-Core]
 commands:
-  npc:
-    usage: "/npc help - For help."
+  shop:
+    usage: "/shop help - for help"
+    permission: "cite.command.shop"
+    permission-message: "§cAction impossible."

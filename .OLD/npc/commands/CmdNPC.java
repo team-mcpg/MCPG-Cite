@@ -124,6 +124,8 @@ public class CmdNPC implements CommandExecutor {
                 }
                 case "save": {
                     npcManager.saveNPC(NPCManager.npcs);
+                    sender.sendMessage("§2Saved !");
+                    break;
                 }
                 default: sendHelp(sender, label);
             }
