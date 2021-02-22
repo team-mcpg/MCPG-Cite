@@ -12,12 +12,12 @@ public class MainCite extends JavaPlugin {
     public void onEnable() {
         mainCite = this;
         tradesManager = new TradesManager(this);
-        tradesManager.canTrades(true);
+        tradesManager.allowTrades = true;
     }
 
     @Override
     public void onDisable() {
-        tradesManager.canTrades(false);
+        tradesManager.allowTrades = false;
     }
 
     public static MainCite getInstance() {

@@ -3,9 +3,9 @@ main: fr.milekat.MCPG_Cite.MainCite
 version: 1.0
 author: MileKat
 api-version: 1.16
-depend: [MCPG-Core]
+depend: [MCPG-Core, Citizens]
 commands:
   shop:
     usage: "/shop help - for help"
-    permission: "cite.command.shop"
+    permission: "cite.shop.command.shop"
     permission-message: "§cAction impossible."

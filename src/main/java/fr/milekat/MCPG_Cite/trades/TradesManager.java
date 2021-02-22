@@ -40,7 +40,7 @@ public class TradesManager {
     /**
      *      Load all trades from MariaDB
      */
-    private void loadTrades() throws SQLException, IOException {
+    public void loadTrades() throws SQLException, IOException {
         Connection connection = MainCore.getSql();
         PreparedStatement q = connection.prepareStatement("SELECT * FROM `mcpg_trades` ORDER BY `npc`, `pos`;");
         q.execute();
@@ -65,27 +65,28 @@ public class TradesManager {
     public void saveTrade(NPC npc) throws SQLException {
         if (tradesMap.containsKey(npc)) {
             ArrayList<VillagerTrade> trades = new ArrayList<>(tradesMap.get(npc));
-            StringBuilder query = new StringBuilder();
+            StringBuilder queryBuilder = new StringBuilder();
             int loop = 1;
             for (VillagerTrade trade : trades) {
-                query.append("INSERT INTO `mcpg_trades`(`npc`, `pos`, ")
+                queryBuilder.append("INSERT INTO `mcpg_trades`(`npc`, `pos`, ")
                         .append(trade.getItemTwo()!=null ? "`itemOne`, " : "")
                         .append("`itemTwo`, `result`) VALUES (")
                         .append(npc.getId()).append(loop)
                         .append(Base64Item.Serialize(trade.getItemOne()))
-                        .append(trade.getItemTwo()!=null ? Base64Item.Serialize(trade.getItemTwo()) : "")
+                        .append(trade.getItemTwo()!=null ? Base64Item.Serialize(trade.getItemTwo()) : null)
                         .append(Base64Item.Serialize(trade.getResult()))
                         .append(") ON DUPLICATE KEY UPDATE")
-                        .append(" `itemOne` = '").append(Base64Item.Serialize(trade.getItemOne())).append("'")
-                        .append(", `result` = '").append(Base64Item.Serialize(trade.getResult())).append("'");
-                if (trade.getItemTwo()!=null) {
-                    query.append(", `itemTwo` = '").append(Base64Item.Serialize(trade.getItemTwo())).append("'");
-                }
-                query.append(";");
+                        .append(" `itemOne` = '")
+                        .append(Base64Item.Serialize(trade.getItemOne())).append("'")
+                        .append(", `result` = '")
+                        .append(Base64Item.Serialize(trade.getResult())).append("'")
+                        .append(", `itemTwo` = '")
+                        .append(trade.getItemTwo()!=null ? Base64Item.Serialize(trade.getItemTwo()) : null)
+                        .append("';");
                 loop++;
             }
             Connection connection = MainCore.getSql();
-            PreparedStatement q = connection.prepareStatement(query.toString());
+            PreparedStatement q = connection.prepareStatement(queryBuilder.toString());
             q.execute();
             q.close();
         }
@@ -94,21 +95,9 @@ public class TradesManager {
     /**
      *      Save all trades into MariaDB !
      */
-    public void saveTrades() {
-        try {
-            for (NPC npc : tradesMap.keySet()) {
-                saveTrade(npc);
-            }
-        } catch (SQLException throwables) {
-            Bukkit.getLogger().warning("Unable to save all NPC");
-            throwables.printStackTrace();
+    public void saveTrades() throws SQLException {
+        for (NPC npc : tradesMap.keySet()) {
+            saveTrade(npc);
         }
-    }
-
-    /**
-     *      Allow/Disallow players from interact with Villagers
-     */
-    public void canTrades(boolean trade) {
-        this.allowTrades = trade;
     }
 }
