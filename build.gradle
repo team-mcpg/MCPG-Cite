@@ -8,23 +8,13 @@ repositories {
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' }
     maven { url = 'https://oss.sonatype.org/content/groups/public' }
     maven { url = 'https://jitpack.io' }
-    maven { url = 'http://repo.citizensnpcs.co' }
+    maven { url = 'https://repo.citizensnpcs.co' }
     maven { url = 'https://masecla.dev/nexus/repository/maven-snapshots' }
 }
 
 compileJava.options.encoding = 'UTF-8'
 
-jar {
-    manifest {
-        attributes "Main-Class": "fr.milekat.MCPG_Cite.MainCite"
-    }
-    from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-}
-
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
     //  Core dependencies
     compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.16.5-R0.1-SNAPSHOT'
     compileOnly group: 'com.github.team-mcpg', name: 'MCPG-Core', version: 'main-SNAPSHOT'
