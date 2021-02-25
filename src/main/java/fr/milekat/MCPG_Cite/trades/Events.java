@@ -44,9 +44,9 @@ public class Events implements Listener {
      *      Open Trade Gui for player
      */
     private void openTradesVillager(NPC npc, Player player) {
-        if (manager.TRADES.containsKey(npc) && manager.TRADERS.containsKey(npc.getId())) {
+        if (manager.TRADES.containsKey(npc.getId()) && manager.TRADERS.containsKey(npc.getId())) {
             if (manager.CANTRADE && manager.TRADERS.get(npc.getId())) {
-                List<VillagerTrade> trades = new ArrayList<>(manager.TRADES.get(npc));
+                List<VillagerTrade> trades = new ArrayList<>(manager.TRADES.get(npc.getId()));
                 VillagerInventory tradeGui = new VillagerInventory(trades, player);
                 tradeGui.setName(npc.getName());
                 tradeGui.open();
@@ -118,29 +118,30 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPlayerTrade(VillagerTradeCompleteEvent event) {
-        try {
-            Connection connection = MainCore.getSql();
-            PreparedStatement q = connection.prepareStatement("INSERT INTO `mcpg_trades_logs`" +
-                    "(`log_date`, `uuid`, `itemOne`, `qtOne`, `itemTwo`, `qtTwo`, `itemResult`, `qtResult`) " +
-                    "VALUES (?,?,?,?,?,?,?,?);");
-            q.setTimestamp(1, new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()));
-            q.setString(2, event.getPlayer().getUniqueId().toString());
-            // TODO: 25/02/2021 wait for event.getTrade() fix, https://github.com/masecla22/VillagerGUIApi/issues/2
-            q.setString(3, event.getTrade().getItemOne().getType().toString());
-            q.setInt(4, event.getTrade().getItemOne().getAmount());
-            if (event.getTrade().getItemTwo()!=null) {
-                q.setString(5, event.getTrade().getItemTwo().getType().toString());
-                q.setInt(6, event.getTrade().getItemTwo().getAmount());
-            } else {
-                q.setString(5, null);
-                q.setString(6, null);
+        for (int i=0; i < event.getCount(); i++) {
+            try {
+                Connection connection = MainCore.getSql();
+                PreparedStatement q = connection.prepareStatement("INSERT INTO `mcpg_trades_logs`" +
+                        "(`log_date`, `uuid`, `itemOne`, `qtOne`, `itemTwo`, `qtTwo`, `itemResult`, `qtResult`) " +
+                        "VALUES (?,?,?,?,?,?,?,?);");
+                q.setTimestamp(1, new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()));
+                q.setString(2, event.getPlayer().getUniqueId().toString());
+                q.setString(3, event.getTrade().getItemOne().getType().toString());
+                q.setInt(4, event.getTrade().getItemOne().getAmount());
+                if (event.getTrade().getItemTwo() != null) {
+                    q.setString(5, event.getTrade().getItemTwo().getType().toString());
+                    q.setInt(6, event.getTrade().getItemTwo().getAmount());
+                } else {
+                    q.setString(5, null);
+                    q.setString(6, null);
+                }
+                q.setString(7, event.getTrade().getResult().getType().toString());
+                q.setInt(8, event.getTrade().getResult().getAmount());
+                q.execute();
+                q.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
             }
-            q.setString(7, event.getTrade().getResult().getType().toString());
-            q.setInt(8, event.getTrade().getResult().getAmount());
-            q.execute();
-            q.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
         }
     }
 }

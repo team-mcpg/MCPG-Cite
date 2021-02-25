@@ -20,6 +20,6 @@ dependencies {
     compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.16.5-R0.1-SNAPSHOT'
     compileOnly group: 'com.github.team-mcpg', name: 'MCPG-Core', version: 'main-SNAPSHOT'
     compileOnly group: 'net.citizensnpcs', name: 'citizensapi', version: '2.0.27-SNAPSHOT'
-    compileOnly group: 'masecla', name: 'VillagerGUIApi', version: '0.0.1-20200910.053224-4'
-    compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.6.0";
+    compileOnly group: 'com.github.team-mcpg', name: 'VillagerGUIApi', version: 'master-SNAPSHOT'
+    compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.6.0"
 }

@@ -6,8 +6,6 @@ import fr.milekat.MCPG_Cite.MainCite;
 import fr.milekat.MCPG_Cite.utils.Base64Item;
 import fr.milekat.MCPG_Core.MainCore;
 import masecla.villager.classes.VillagerTrade;
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -20,7 +18,7 @@ import java.util.List;
 
 public class TradesManager {
     public final HashMap<Integer, Boolean> TRADERS = new HashMap<>();
-    public final BiMap<NPC, List<VillagerTrade>> TRADES = HashBiMap.create();
+    public final BiMap<Integer, List<VillagerTrade>> TRADES = HashBiMap.create();
     public boolean CANTRADE;
 
     /**
@@ -62,9 +60,7 @@ public class TradesManager {
         PreparedStatement q = connection.prepareStatement("SELECT * FROM `mcpg_trades` WHERE `npc` = ? ORDER BY `pos`;");
         q.setInt(1, npc_id);
         q.execute();
-        NPC npc = CitizensAPI.getNPCRegistry().getById(npc_id);
-        if (npc==null) return;
-        this.TRADES.remove(npc);
+        this.TRADES.remove(npc_id);
         while (q.getResultSet().next()) {
             VillagerTrade villagerTrade = new VillagerTrade(
                     Base64Item.Deserialize(q.getResultSet().getString("itemOne")),
@@ -72,52 +68,10 @@ public class TradesManager {
                             Base64Item.Deserialize(q.getResultSet().getString("itemTwo")),
                     Base64Item.Deserialize(q.getResultSet().getString("result")),
                     9999);
-            List<VillagerTrade> trades = TRADES.getOrDefault(npc, new ArrayList<>());
+            List<VillagerTrade> trades = TRADES.getOrDefault(npc_id, new ArrayList<>());
             trades.add(villagerTrade);
-            this.TRADES.put(npc, trades);
+            this.TRADES.put(npc_id, trades);
         }
         q.close();
-    }
-
-    /**
-     *      Save / Update all trades from a NPC in MariaDB
-     */
-    public void saveTrade(NPC npc) throws SQLException {
-        if (TRADES.containsKey(npc)) {
-            ArrayList<VillagerTrade> trades = new ArrayList<>(TRADES.get(npc));
-            StringBuilder queryBuilder = new StringBuilder();
-            int loop = 1;
-            for (VillagerTrade trade : trades) {
-                queryBuilder.append("INSERT INTO `mcpg_trades`(`npc`, `pos`, ")
-                        .append(trade.getItemTwo()!=null ? "`itemOne`, " : "")
-                        .append("`itemTwo`, `result`) VALUES (")
-                        .append(npc.getId()).append(loop)
-                        .append(Base64Item.Serialize(trade.getItemOne()))
-                        .append(trade.getItemTwo()!=null ? Base64Item.Serialize(trade.getItemTwo()) : null)
-                        .append(Base64Item.Serialize(trade.getResult()))
-                        .append(") ON DUPLICATE KEY UPDATE")
-                        .append(" `itemOne` = '")
-                        .append(Base64Item.Serialize(trade.getItemOne())).append("'")
-                        .append(", `result` = '")
-                        .append(Base64Item.Serialize(trade.getResult())).append("'")
-                        .append(", `itemTwo` = '")
-                        .append(trade.getItemTwo()!=null ? Base64Item.Serialize(trade.getItemTwo()) : null)
-                        .append("';");
-                loop++;
-            }
-            Connection connection = MainCore.getSql();
-            PreparedStatement q = connection.prepareStatement(queryBuilder.toString());
-            q.execute();
-            q.close();
-        }
-    }
-
-    /**
-     *      Save all trades into MariaDB !
-     */
-    public void saveTrades() throws SQLException {
-        for (NPC npc : TRADES.keySet()) {
-            saveTrade(npc);
-        }
     }
 }
