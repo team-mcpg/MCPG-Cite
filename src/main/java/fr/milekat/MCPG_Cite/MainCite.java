@@ -6,21 +6,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class MainCite extends JavaPlugin {
     private static MainCite mainCite;
     private TradesManager tradesManager;
-    public static String prefix = "[MCPG-Cite] ";
+    public static String PREFIX = "[MCPG-Cite] ";
 
     @Override
     public void onEnable() {
         mainCite = this;
         tradesManager = new TradesManager(this);
-        tradesManager.allowTrades = true;
+        tradesManager.CANTRADE = true;
     }
 
     @Override
     public void onDisable() {
-        tradesManager.allowTrades = false;
+        tradesManager.CANTRADE = false;
     }
 
-    public static MainCite getInstance() {
-        return mainCite;
-    }
+    public static MainCite getInstance() { return mainCite; }
 }

@@ -3,7 +3,7 @@ main: fr.milekat.MCPG_Cite.MainCite
 version: 1.0
 author: MileKat
 api-version: 1.16
-depend: [MCPG-Core, Citizens]
+depend: [MCPG-Core, Citizens, ProtocolLib]
 commands:
   shop:
     usage: "/shop help - for help"
