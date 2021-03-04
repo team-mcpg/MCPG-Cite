@@ -15,7 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.sql.SQLException;
 
 public class MarketEvent implements Listener {
-    public static final String PREFIX = "§8[§bBalkou§2Immo§8]";
+    public static final String PREFIX = "§8[§6MCPG§8]";
     public static final String SELL = "§b*§aà vendre§b*";
     public static final String SOLD = "§b*§cVendu§b*";
     public static final float FEE = 80;
@@ -30,11 +30,11 @@ public class MarketEvent implements Listener {
         event.setCancelled(true);
         try {
             Team team = TeamManager.getTeam(event.getPlayer());
-            Region region = ClaimManager.regions.get(sign.getLine(1));
+            Region region = ClaimManager.REGIONS.get(sign.getLine(1));
             if (sign.getLine(3).equalsIgnoreCase(SELL)) {
                 if (team.getMoney() >= region.getPrice()) {
                     if (event.getPlayer().isSneaking()) {
-                        new RegionMarket(true, event.getPlayer(), team, region, sign);
+                        new RegionMarket(true, event.getPlayer(), team, region);
                     } else {
                         event.getPlayer().sendMessage(MainCite.PREFIX + "§6Sneak pour acheter cette habitation !");
                     }
@@ -44,7 +44,7 @@ public class MarketEvent implements Listener {
             } else if (sign.getLine(3).equalsIgnoreCase(SOLD)) {
                 if (team.getId() == region.getTeam().getId()) {
                     if (event.getPlayer().isSneaking()) {
-                        new RegionMarket(false, event.getPlayer(), team, region, sign);
+                        new RegionMarket(false, event.getPlayer(), team, region);
                     } else {
                         event.getPlayer().sendMessage(MainCite.PREFIX + "§6Sneak pour vendre cette habitation !");
                     }

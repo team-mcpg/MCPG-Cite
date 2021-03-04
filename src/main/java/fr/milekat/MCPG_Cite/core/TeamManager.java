@@ -8,6 +8,7 @@ import org.bukkit.OfflinePlayer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class TeamManager {
@@ -28,7 +29,7 @@ public class TeamManager {
     public static Team getTeam(OfflinePlayer player) throws SQLException, IllegalArgumentException {
         Connection connection = MainCore.getSql();
         PreparedStatement q = connection.prepareStatement("SELECT * FROM `mcpg_team` WHERE `team_id` = " +
-                "(SELECT `team_id` FROM `mcpg_player` WHERE `uuid` = " + player.getUniqueId() + ");");
+                "(SELECT `team_id` FROM `mcpg_player` WHERE `uuid` = '" + player.getUniqueId() + "');");
         return setTeam(connection, q);
     }
 
@@ -39,7 +40,7 @@ public class TeamManager {
         q.execute();
         q.getResultSet().next();
         Team team = new Team(q.getResultSet().getInt("team_id"), q.getResultSet().getString("name"),
-                q.getResultSet().getInt("money"), null);
+                q.getResultSet().getInt("money"), new ArrayList<>());
         q.close();
         q = connection.prepareStatement("SELECT `uuid` FROM `mcpg_player` WHERE `team_id` = ?;");
         q.setInt(1, team.getId());

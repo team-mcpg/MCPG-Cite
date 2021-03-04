@@ -17,10 +17,10 @@ public class BuildMode implements TabExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try {
             if (Boolean.parseBoolean(args[0])) {
-                ClaimManager.builder.add((Player) sender);
+                ClaimManager.BUILDER.add((Player) sender);
                 sender.sendMessage(MainCite.PREFIX + "§6Mode build §2Activé§6.");
             } else {
-                ClaimManager.builder.remove((Player) sender);
+                ClaimManager.BUILDER.remove((Player) sender);
                 sender.sendMessage(MainCite.PREFIX + "§6Mode build §cDésactivé§6.");
             }
         } catch (Exception ignore) {

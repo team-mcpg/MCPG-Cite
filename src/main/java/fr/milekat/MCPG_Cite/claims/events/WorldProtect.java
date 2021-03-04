@@ -8,7 +8,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.type.Sign;
+import org.bukkit.block.Sign;
 import org.bukkit.block.data.type.Stairs;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
@@ -35,7 +35,7 @@ public class WorldProtect implements Listener {
 
     @EventHandler (ignoreCancelled = true)
     public void onPlaceWater(PlayerBucketEmptyEvent event) {
-        if (ClaimManager.canBuild(event.getBlock().getLocation(), event.getPlayer())) {
+        if (!ClaimManager.canBuild(event.getBlock().getLocation(), event.getPlayer())) {
             event.setCancelled(true);
             denyMsg(event.getPlayer());
         }
@@ -43,7 +43,7 @@ public class WorldProtect implements Listener {
 
     @EventHandler (ignoreCancelled = true)
     public void onWaterTake(PlayerBucketFillEvent event) {
-        if (ClaimManager.canBuild(event.getBlock().getLocation(), event.getPlayer())) {
+        if (!ClaimManager.canBuild(event.getBlock().getLocation(), event.getPlayer())) {
             event.setCancelled(true);
             denyMsg(event.getPlayer());
         }
@@ -51,7 +51,7 @@ public class WorldProtect implements Listener {
 
     @EventHandler (ignoreCancelled = true)
     public void onPlace(BlockPlaceEvent event) {
-        if (ClaimManager.canBuild(event.getBlockPlaced().getLocation(), event.getPlayer())) {
+        if (!ClaimManager.canBuild(event.getBlockPlaced().getLocation(), event.getPlayer())) {
             event.setCancelled(true);
             denyMsg(event.getPlayer());
         }
@@ -59,7 +59,7 @@ public class WorldProtect implements Listener {
 
     @EventHandler (ignoreCancelled = true)
     public void onBreak(BlockBreakEvent event) {
-        if (ClaimManager.canBuild(event.getBlock().getLocation(), event.getPlayer())) {
+        if (!ClaimManager.canBuild(event.getBlock().getLocation(), event.getPlayer())) {
             event.setCancelled(true);
             denyMsg(event.getPlayer());
             return;
@@ -85,7 +85,7 @@ public class WorldProtect implements Listener {
         if (block.getType().equals(Material.CRAFTING_TABLE)) return;
         if (block.getBlockData() instanceof Stairs) return;
         if (block.getState() instanceof Sign) return;
-        if (ClaimManager.canInteract(block.getLocation(), player)) {
+        if (!ClaimManager.canInteract(block.getLocation(), player)) {
             event.setCancelled(true);
             event.setUseInteractedBlock(Event.Result.DENY);
             if (event.getHand() == EquipmentSlot.HAND) {
@@ -98,8 +98,8 @@ public class WorldProtect implements Listener {
     public void onTeleport(PlayerTeleportEvent event) {
         if ((event.getCause().equals(PlayerTeleportEvent.TeleportCause.ENDER_PEARL) ||
                 event.getCause().equals(PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT)) && event.getTo()!=null) {
-            if (ClaimManager.canTeleportHere(event.getPlayer().getLocation(), event.getPlayer()) ||
-                    ClaimManager.canTeleportHere(event.getTo(), event.getPlayer())) {
+            if (!ClaimManager.canTeleportHere(event.getPlayer().getLocation(), event.getPlayer()) ||
+                    !ClaimManager.canTeleportHere(event.getTo(), event.getPlayer())) {
                 event.setCancelled(true);
                 denyMsg(event.getPlayer());
             }
@@ -114,7 +114,7 @@ public class WorldProtect implements Listener {
     @EventHandler (ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event) {
         if (!event.getAction().equals(Action.PHYSICAL)) return;
-        if (ClaimManager.canInteract(event.getPlayer().getLocation().getBlock().getLocation(), event.getPlayer())) {
+        if (!ClaimManager.canInteract(event.getPlayer().getLocation().getBlock().getLocation(), event.getPlayer())) {
             event.setCancelled(true);
             event.setUseInteractedBlock(Event.Result.DENY);
         }
@@ -123,7 +123,7 @@ public class WorldProtect implements Listener {
     @EventHandler (ignoreCancelled = true)
     public void onDrop(PlayerDropItemEvent event){
         if (!event.getPlayer().getOpenInventory().getType().equals(InventoryType.MERCHANT)) {
-            if (!ClaimManager.builder.contains(event.getPlayer())) {
+            if (!ClaimManager.BUILDER.contains(event.getPlayer())) {
                 event.setCancelled(true);
             }
         }
@@ -135,7 +135,7 @@ public class WorldProtect implements Listener {
             event.setCancelled(true);
             event.getEntity().getLocation().getBlock().setType(Material.AIR);
             for (Player loopPlayer : Bukkit.getOnlinePlayers()){
-                if (ClaimManager.builder.contains(loopPlayer)) {
+                if (ClaimManager.BUILDER.contains(loopPlayer)) {
                     loopPlayer.sendMessage(MainCite.PREFIX + "§cAttention ! Il ne faut pas poser de block sur une item frame (Pos:" +
                             LocationParser.getFullString(event.getEntity().getLocation()) + ")");
                 }
@@ -144,7 +144,7 @@ public class WorldProtect implements Listener {
         else if (event.getCause().equals(HangingBreakEvent.RemoveCause.PHYSICS)) {
             event.setCancelled(true);
             for (Player loopPlayer : Bukkit.getOnlinePlayers()){
-                if (ClaimManager.builder.contains(loopPlayer)) {
+                if (ClaimManager.BUILDER.contains(loopPlayer)) {
                     loopPlayer.sendMessage(MainCite.PREFIX + "§cAttention ! Item frame volante : "
                             + LocationParser.getFullString(event.getEntity().getLocation()));
                 }
@@ -156,7 +156,7 @@ public class WorldProtect implements Listener {
     public void onItemFrameBy(HangingBreakByEntityEvent event){
         if (!(event.getRemover() instanceof Player)) {
             event.setCancelled(true);
-        } else if (!ClaimManager.builder.contains((Player) event.getRemover())) {
+        } else if (!ClaimManager.BUILDER.contains((Player) event.getRemover())) {
             event.setCancelled(true);
             denyMsg((Player) event.getRemover());
         }
@@ -167,7 +167,7 @@ public class WorldProtect implements Listener {
         if (event.getEntity() instanceof ItemFrame) {
             if (!(event.getDamager() instanceof Player)) {
                 event.setCancelled(true);
-            } else if (!ClaimManager.builder.contains((Player) event.getDamager())) {
+            } else if (!ClaimManager.BUILDER.contains((Player) event.getDamager())) {
                 event.setCancelled(true);
                 denyMsg((Player) event.getDamager());
             }
@@ -177,7 +177,7 @@ public class WorldProtect implements Listener {
     @EventHandler (ignoreCancelled = true)
     public void onItemTurnItemFrameBy(PlayerInteractEntityEvent event){
         if (event.getRightClicked() instanceof ItemFrame) {
-            if (!ClaimManager.builder.contains(event.getPlayer())) {
+            if (!ClaimManager.BUILDER.contains(event.getPlayer())) {
                 event.setCancelled(true);
                 denyMsg(event.getPlayer());
             }
@@ -188,7 +188,7 @@ public class WorldProtect implements Listener {
     public void onHangingPlace(HangingPlaceEvent event){
         if (event.getPlayer()==null) {
             event.setCancelled(true);
-        } else if (!ClaimManager.builder.contains(event.getPlayer())) {
+        } else if (!ClaimManager.BUILDER.contains(event.getPlayer())) {
             event.setCancelled(true);
             denyMsg(event.getPlayer());
         }
@@ -198,7 +198,7 @@ public class WorldProtect implements Listener {
     public void onShoot(EntityShootBowEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             event.setCancelled(true);
-        } else if (!ClaimManager.builder.contains((Player) event.getEntity())) {
+        } else if (!ClaimManager.BUILDER.contains((Player) event.getEntity())) {
             event.setCancelled(true);
             denyMsg((Player) event.getEntity());
         }
@@ -206,8 +206,8 @@ public class WorldProtect implements Listener {
 
     @EventHandler (ignoreCancelled = true)
     public void onPlayerAttack(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player) || ClaimManager.builder.contains((Player) event.getDamager())) return;
-        if (ClaimManager.canBuild(event.getEntity().getLocation(), (Player) event.getDamager())) {
+        if (!(event.getDamager() instanceof Player) || ClaimManager.BUILDER.contains((Player) event.getDamager())) return;
+        if (!ClaimManager.canBuild(event.getEntity().getLocation(), (Player) event.getDamager())) {
             event.setCancelled(true);
             denyMsg((Player) event.getDamager());
         }

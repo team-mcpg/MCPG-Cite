@@ -1,6 +1,8 @@
 package fr.milekat.MCPG_Cite;
 
+import fr.milekat.MCPG_Cite.claims.ClaimManager;
 import fr.milekat.MCPG_Cite.trades.TradesManager;
+import fr.mrmicky.fastinv.FastInvManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MainCite extends JavaPlugin {
@@ -11,7 +13,9 @@ public class MainCite extends JavaPlugin {
     @Override
     public void onEnable() {
         mainCite = this;
+        FastInvManager.register(this);
         tradesManager = new TradesManager(this);
+        new ClaimManager(this);
         tradesManager.CANTRADE = true;
     }
 

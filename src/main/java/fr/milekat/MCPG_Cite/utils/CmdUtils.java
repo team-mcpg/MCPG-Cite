@@ -2,6 +2,7 @@ package fr.milekat.MCPG_Cite.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 public class CmdUtils {
@@ -26,5 +27,19 @@ public class CmdUtils {
         } else if ("false".startsWith(arg.toLowerCase(Locale.ROOT))) {
             return new ArrayList<>(Collections.singletonList("false"));
         } else return null;
+    }
+
+    /**
+     *
+     */
+    public static ArrayList<String> getTabArgs(String arg, List<String> MyStrings) {
+        ArrayList<String> MySortStrings = new ArrayList<>();
+        for(String loop : MyStrings) {
+            if(loop.toLowerCase().startsWith(arg.toLowerCase()))
+            {
+                MySortStrings.add(loop);
+            }
+        }
+        return MySortStrings;
     }
 }

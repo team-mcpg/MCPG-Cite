@@ -56,9 +56,9 @@ public class ClaimEditor implements Listener {
                 player.getInventory().getItemInMainHand().getType().equals(Material.BLAZE_ROD) &&
                 player.isSneaking()) {
             ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();
-            if (meta!=null && ClaimManager.regions.containsKey(meta.getDisplayName())) {
-                Region region = ClaimManager.regions.get(meta.getDisplayName());
-                if (ClaimManager.regionsBlocks.getOrDefault(block.getLocation(),"cite")
+            if (meta!=null && ClaimManager.REGIONS.containsKey(meta.getDisplayName())) {
+                Region region = ClaimManager.REGIONS.get(meta.getDisplayName());
+                if (ClaimManager.REGIONS_BLOCKS.getOrDefault(block.getLocation(),"cite")
                         .equalsIgnoreCase("cite")) {
                     addToClaim(region, block, player);
                 } else {
@@ -81,7 +81,7 @@ public class ClaimEditor implements Listener {
             q.setInt(2, region.getId());
             q.execute();
             q.close();
-            ClaimManager.regionsBlocks.put(block.getLocation(), region.getName());
+            ClaimManager.REGIONS_BLOCKS.put(block.getLocation(), region.getName());
             player.sendMessage(MainCite.PREFIX + "§6Block ajouté à §b" + region.getName());
         } catch (SQLException throwables) {
             Bukkit.getLogger().warning(MainCite.PREFIX + "Erreur dans l'ajout d'un block à une région.");
@@ -96,7 +96,7 @@ public class ClaimEditor implements Listener {
     private void removeToClaim(Location loc, Player player) {
         Connection connection = MainCore.getSql();
         try {
-            Region region = ClaimManager.regions.get(ClaimManager.regionsBlocks.get(loc));
+            Region region = ClaimManager.REGIONS.get(ClaimManager.REGIONS_BLOCKS.get(loc));
             PreparedStatement q = connection.prepareStatement("SELECT `rg_locs` FROM `mcpg_regions` WHERE `rg_id` = ?;");
             q.setInt(1, region.getId());
             q.execute();
@@ -121,7 +121,7 @@ public class ClaimEditor implements Listener {
             q.setInt(2, region.getId());
             q.execute();
             q.close();
-            ClaimManager.regionsBlocks.remove(loc);
+            ClaimManager.REGIONS_BLOCKS.remove(loc);
             player.sendMessage(MainCite.PREFIX + "§6Block retiré de la claim.");
         } catch (SQLException throwables) {
             Bukkit.getLogger().warning(MainCite.PREFIX + "Erreur dans le remove d'un block à une région.");

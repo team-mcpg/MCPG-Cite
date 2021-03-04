@@ -3,6 +3,7 @@ package fr.milekat.MCPG_Cite.claims;
 import fr.milekat.MCPG_Cite.MainCite;
 import fr.milekat.MCPG_Cite.claims.classes.Region;
 import fr.milekat.MCPG_Cite.claims.commands.BuildMode;
+import fr.milekat.MCPG_Cite.claims.commands.RegionCmd;
 import fr.milekat.MCPG_Cite.claims.events.ClaimEditor;
 import fr.milekat.MCPG_Cite.claims.events.MarketEvent;
 import fr.milekat.MCPG_Cite.claims.events.WorldProtect;
@@ -25,19 +26,23 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class ClaimManager {
-    public static ArrayList<Player> builder = new ArrayList<>();
-    public static LinkedHashMap<String, Region> regions = new LinkedHashMap<>();
-    public static HashMap<Location, String> regionsBlocks = new HashMap<>();
+    public static ArrayList<Player> BUILDER = new ArrayList<>();
+    public static LinkedHashMap<String, Region> REGIONS = new LinkedHashMap<>();
+    public static HashMap<Location, String> REGIONS_BLOCKS = new HashMap<>();
 
     public ClaimManager(JavaPlugin plugin) {
         plugin.getServer().getPluginManager().registerEvents(new WorldProtect(), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new MarketEvent(), plugin);
         plugin.getServer().getPluginManager().registerEvents(new ClaimEditor(), plugin);
         plugin.getCommand("builder").setExecutor(new BuildMode());
         plugin.getCommand("builder").setTabCompleter(new BuildMode());
+        plugin.getCommand("rg").setExecutor(new RegionCmd());
+        plugin.getCommand("rg").setTabCompleter(new RegionCmd());
         try {
             loadRegions();
         } catch (SQLException throwables) {
             Bukkit.getLogger().warning(MainCite.PREFIX + "Load region error, disable plugin.");
+            throwables.printStackTrace();
             Bukkit.getServer().getPluginManager().disablePlugin(plugin);
         }
     }
@@ -47,49 +52,32 @@ public class ClaimManager {
      */
     private void loadRegions() throws SQLException {
         Connection connection = MainCore.getSql();
-        PreparedStatement q = connection.prepareStatement("");
+        PreparedStatement q = connection.prepareStatement("SELECT * FROM `mcpg_region`;");
         q.execute();
-        regions.clear();
-        regionsBlocks.clear();
+        REGIONS.clear();
+        REGIONS_BLOCKS.clear();
         while (q.getResultSet().next()) {
-            Region region = new Region(q.getResultSet().getInt("region_id"),
-                    q.getResultSet().getString("region_name"), null, q.getResultSet().getInt("price"),
+            Region region = new Region(q.getResultSet().getInt("rg_id"),
+                    q.getResultSet().getString("rg_name"), null, q.getResultSet().getInt("rg_price"),
                     null, new ArrayList<>());
             if (q.getResultSet().getInt("team_id") != 0) {
                 region.setTeam(TeamManager.getTeam(q.getResultSet().getInt("team_id")));
             }
             if (q.getResultSet().getString("rg_sign") != null) {
                 region.setSign((Sign) getBlock(q.getResultSet().getString("rg_sign")).getState());
-                updateSign(region);
             }
-            if (q.getResultSet().getString("rg_locs") != null) {
-                for (String loc : q.getResultSet().getString("rg_locs").split(";")) {
+            if (q.getResultSet().getString("rg_blocks") != null) {
+                for (String loc : q.getResultSet().getString("rg_blocks").split(";")) {
                     region.getBlocks().add(LocationParser.getLocation("world", loc));
-                    regionsBlocks.put(LocationParser.getLocation("world", loc), region.getName());
+                    REGIONS_BLOCKS.put(LocationParser.getLocation("world", loc), region.getName());
                 }
             }
-            regions.put(region.getName(), region);
+            REGIONS.put(region.getName(), region);
         }
+        q.close();
     }
     private Block getBlock(String location) {
         return LocationParser.getLocation("world", location).getBlock();
-    }
-
-    /**
-     *      Mise à jour du contenu des panneaux
-     */
-    private void updateSign(Region region) {
-        Sign sign = region.getSign();
-        sign.setLine(0, MarketEvent.PREFIX);
-        sign.setLine(1, region.getName());
-        if (region.getTeam() != null) {
-            sign.setLine(2, region.getTeam().getName());
-            sign.setLine(3, MarketEvent.SOLD);
-        } else {
-            sign.setLine(2, "§6Prix§c: §2" + region.getPrice());
-            sign.setLine(3, MarketEvent.SELL);
-        }
-        sign.update();
     }
 
     /**
@@ -98,7 +86,7 @@ public class ClaimManager {
      * @return nom de la région (cite par défaut)
      */
     public static Region getRegion(Location location) {
-        return regions.getOrDefault(regionsBlocks.get(location.getBlock().getLocation()),null);
+        return REGIONS.getOrDefault(REGIONS_BLOCKS.get(location.getBlock().getLocation()),null);
     }
 
     /**
@@ -108,7 +96,7 @@ public class ClaimManager {
      * @return autorisé true/false
      */
     public static boolean canTeleportHere(Location location, Player player) {
-        if (builder.contains(player)) return true;
+        if (BUILDER.contains(player)) return true;
         Region region = getRegion(location);
         if (region == null || region.getName().equalsIgnoreCase("interact-ok")) return false;
         return canBuild(location, player);
@@ -121,7 +109,7 @@ public class ClaimManager {
      * @return autorisé true/false
      */
     public static boolean canInteract(Location location, Player player){
-        if (builder.contains(player)) return true;
+        if (BUILDER.contains(player)) return true;
         Region region = getRegion(location);
         if (region == null) return false;
         if (region.getName().equalsIgnoreCase("interact-ok")) return true;
@@ -135,7 +123,7 @@ public class ClaimManager {
      * @return autorisé true/false
      */
     public static boolean canBuild(Location location, Player player) {
-        if (builder.contains(player)) return true;
+        if (BUILDER.contains(player)) return true;
         Region region = getRegion(location);
         if (region == null || region.getTeam() == null) return false;
         for (OfflinePlayer members : region.getTeam().getMembers()) {
