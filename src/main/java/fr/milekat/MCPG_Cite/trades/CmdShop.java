@@ -1,8 +1,8 @@
 package fr.milekat.MCPG_Cite.trades;
 
 import fr.milekat.MCPG_Cite.MainCite;
+import fr.milekat.MCPG_Cite.utils.CmdUtils;
 import fr.milekat.MCPG_Core.MainCore;
-import fr.milekat.MCPG_Core.utils.CmdUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
