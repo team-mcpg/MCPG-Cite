@@ -7,8 +7,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import fr.milekat.MCPG_Cite.MainCite;
 import fr.milekat.MCPG_Cite.claims.ClaimManager;
 import fr.milekat.MCPG_Cite.claims.classes.Region;
-import fr.milekat.MCPG_Cite.utils.CmdUtils;
-import fr.milekat.MCPG_Cite.utils.LocationParser;
+import fr.milekat.MCPG_Cite.utils.McTools;
 import fr.milekat.MCPG_Core.MainCore;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -148,7 +147,7 @@ public class RegionCmd implements TabExecutor {
             try {
                 for (Block block : getBlocks(pos1,pos2,player.getWorld())) {
                     pos.append(";");
-                    pos.append(LocationParser.getString(block.getLocation()));
+                    pos.append(McTools.getString(block.getLocation()));
                     blocks.put(block.getLocation(), region.getName());
                     block.setType(Material.AIR);
                 }
@@ -176,7 +175,7 @@ public class RegionCmd implements TabExecutor {
         Block block = player.getTargetBlockExact(5);
         if (block != null && block.getState() instanceof Sign) {
             try {
-                updateSQLRegion(region, "sign", LocationParser.getString(block.getLocation()), 0);
+                updateSQLRegion(region, "sign", McTools.getString(block.getLocation()), 0);
                 region.setSign((Sign) block.getState());
                 player.sendMessage(MainCite.PREFIX + "§6Panneau mis à jour pour la région §b" + region.getName() + "§c.");
             } catch (SQLException exception) {
@@ -270,15 +269,15 @@ public class RegionCmd implements TabExecutor {
         } else {
             if (args[0].equalsIgnoreCase("update")) {
                 if (args.length <= 2) {
-                    return CmdUtils.getTabArgs(args[1], new ArrayList<>(Arrays.asList("prix", "claim", "sign")));
+                    return McTools.getTabArgs(args[1], new ArrayList<>(Arrays.asList("prix", "claim", "sign")));
                 } else if (args.length <= 3 &&
                         (args[1].equalsIgnoreCase("prix") ||
                                 args[1].equalsIgnoreCase("claim") ||
                                 args[1].equalsIgnoreCase("sign"))) {
-                    return CmdUtils.getTabArgs(args[2], new ArrayList<>(ClaimManager.REGIONS.keySet()));
+                    return McTools.getTabArgs(args[2], new ArrayList<>(ClaimManager.REGIONS.keySet()));
                 }
             } else if (args[0].equalsIgnoreCase("tool")) {
-                return CmdUtils.getTabArgs(args[1], new ArrayList<>(ClaimManager.REGIONS.keySet()));
+                return McTools.getTabArgs(args[1], new ArrayList<>(ClaimManager.REGIONS.keySet()));
             }
         }
         return null;

@@ -1,7 +1,7 @@
 package fr.milekat.MCPG_Cite.trades;
 
 import fr.milekat.MCPG_Cite.MainCite;
-import fr.milekat.MCPG_Cite.utils.CmdUtils;
+import fr.milekat.MCPG_Cite.utils.McTools;
 import fr.milekat.MCPG_Core.MainCore;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -33,8 +33,8 @@ public class CmdShop implements TabExecutor {
             } else if (args.length == 2 && args[0].equalsIgnoreCase("disable")) {
                 updateShop(sender, Integer.parseInt(args[1]), false);
             } else if (args.length == 2 && args[0].equalsIgnoreCase("lock")) {
-                manager.CANTRADE = Boolean.parseBoolean(args[1]);
-                sender.sendMessage(MainCite.PREFIX + "Trades définis sur " + manager.CANTRADE);
+                manager.CAN_TRADE = Boolean.parseBoolean(args[1]);
+                sender.sendMessage(MainCite.PREFIX + "Trades définis sur " + manager.CAN_TRADE);
             } else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
                 manager.loadTrades();
                 sender.sendMessage(MainCite.PREFIX + "Trades updated !");
@@ -114,7 +114,7 @@ public class CmdShop implements TabExecutor {
             }
         } else if (args.length <= 2) {
             if (args[0].equalsIgnoreCase("lock")) {
-                return CmdUtils.getBool(args[1]);
+                return McTools.getBool(args[1]);
             } else if (args[0].equalsIgnoreCase("enable") || args[0].equalsIgnoreCase("disable")) {
                 return manager.TRADERS.keySet().stream().map(Object::toString).collect(Collectors.toList());
             }

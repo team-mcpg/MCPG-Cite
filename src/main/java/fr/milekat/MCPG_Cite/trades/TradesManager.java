@@ -19,12 +19,13 @@ import java.util.List;
 public class TradesManager {
     public final HashMap<Integer, Boolean> TRADERS = new HashMap<>();
     public final BiMap<Integer, List<VillagerTrade>> TRADES = HashBiMap.create();
-    public boolean CANTRADE;
+    public boolean CAN_TRADE;
 
     /**
      *      Init of Trades features
      */
     public TradesManager(JavaPlugin plugin) {
+        CAN_TRADE = false;
         plugin.getCommand("shop").setExecutor(new CmdShop(this));
         plugin.getCommand("shop").setTabCompleter(new CmdShop(this));
         plugin.getServer().getPluginManager().registerEvents(new Events(this), plugin);
@@ -34,6 +35,7 @@ public class TradesManager {
             Bukkit.getLogger().warning(MainCite.PREFIX + "Unable to load Trades from SQL.");
             throwables.printStackTrace();
         }
+        CAN_TRADE = true;
     }
 
     /**

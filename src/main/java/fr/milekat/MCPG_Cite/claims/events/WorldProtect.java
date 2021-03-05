@@ -2,7 +2,7 @@ package fr.milekat.MCPG_Cite.claims.events;
 
 import fr.milekat.MCPG_Cite.MainCite;
 import fr.milekat.MCPG_Cite.claims.ClaimManager;
-import fr.milekat.MCPG_Cite.utils.LocationParser;
+import fr.milekat.MCPG_Cite.utils.McTools;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -137,7 +137,7 @@ public class WorldProtect implements Listener {
             for (Player loopPlayer : Bukkit.getOnlinePlayers()){
                 if (ClaimManager.BUILDER.contains(loopPlayer)) {
                     loopPlayer.sendMessage(MainCite.PREFIX + "§cAttention ! Il ne faut pas poser de block sur une item frame (Pos:" +
-                            LocationParser.getFullString(event.getEntity().getLocation()) + ")");
+                            McTools.getFullString(event.getEntity().getLocation()) + ")");
                 }
             }
         }
@@ -146,7 +146,7 @@ public class WorldProtect implements Listener {
             for (Player loopPlayer : Bukkit.getOnlinePlayers()){
                 if (ClaimManager.BUILDER.contains(loopPlayer)) {
                     loopPlayer.sendMessage(MainCite.PREFIX + "§cAttention ! Item frame volante : "
-                            + LocationParser.getFullString(event.getEntity().getLocation()));
+                            + McTools.getFullString(event.getEntity().getLocation()));
                 }
             }
         }
