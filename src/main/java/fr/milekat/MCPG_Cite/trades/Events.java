@@ -19,19 +19,19 @@ import org.bukkit.inventory.Inventory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class Events implements Listener {
-    private final TradesManager manager;
-    private final String GUIEDITPREFIX = "§c[EDIT] ";
+    private final TradesManager MANAGER;
+    private final String GUI_EDIT_PREFIX = "§c[EDIT] ";
 
-    public Events(TradesManager manager) { this.manager = manager; }
+    public Events(TradesManager manager) { this.MANAGER = manager; }
 
     @EventHandler
     public void onNpcClick(NPCRightClickEvent event) {
-        if (!manager.TRADERS.containsKey(event.getNPC().getId())) return;
+        if (!MANAGER.TRADERS.containsKey(event.getNPC().getId())) return;
         if (event.getClicker().isSneaking() && event.getClicker().hasPermission("cite.shop.edit")) {
             openTradesEdit(event.getNPC(), event.getClicker());
         } else openTradesVillager(event.getNPC(), event.getClicker());
@@ -44,9 +44,9 @@ public class Events implements Listener {
      *      Open Trade Gui for player
      */
     private void openTradesVillager(NPC npc, Player player) {
-        if (manager.TRADES.containsKey(npc.getId()) && manager.TRADERS.containsKey(npc.getId())) {
-            if (manager.CANTRADE && manager.TRADERS.get(npc.getId())) {
-                List<VillagerTrade> trades = new ArrayList<>(manager.TRADES.get(npc.getId()));
+        if (MANAGER.TRADES.containsKey(npc.getId()) && MANAGER.TRADERS.containsKey(npc.getId())) {
+            if (MANAGER.CAN_TRADE && MANAGER.TRADERS.get(npc.getId())) {
+                List<VillagerTrade> trades = new ArrayList<>(MANAGER.TRADES.get(npc.getId()));
                 VillagerInventory tradeGui = new VillagerInventory(trades, player);
                 tradeGui.setName(npc.getName());
                 tradeGui.open();
@@ -60,7 +60,7 @@ public class Events implements Listener {
      *      Editing trades GUI
      */
     private void openTradesEdit(NPC npc, Player player) {
-        Inventory inv = Bukkit.createInventory(player, InventoryType.CHEST, GUIEDITPREFIX + npc.getId());
+        Inventory inv = Bukkit.createInventory(player, InventoryType.CHEST, GUI_EDIT_PREFIX + npc.getId());
         try {
             Connection connection = MainCore.getSql();
             PreparedStatement q = connection.prepareStatement(
@@ -87,7 +87,7 @@ public class Events implements Listener {
     @EventHandler
     public void saveTradesEdit(InventoryCloseEvent event) {
         try {
-            if (!event.getView().getTitle().startsWith(GUIEDITPREFIX)) return;
+            if (!event.getView().getTitle().startsWith(GUI_EDIT_PREFIX)) return;
             int tradesSize = event.getInventory().firstEmpty();
             if (tradesSize>8) tradesSize = 8;
             Connection connection = MainCore.getSql();
@@ -96,7 +96,7 @@ public class Events implements Listener {
                     PreparedStatement q = connection.prepareStatement(
                             "INSERT INTO `mcpg_trades`(`npc`, `pos`, `itemOne`, `itemTwo`, `result`) " +
                                 "VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE `itemOne` = ?, `itemTwo` = ?, `result` = ?;");
-                    q.setInt(1, Integer.parseInt(event.getView().getTitle().replace(GUIEDITPREFIX, "")));
+                    q.setInt(1, Integer.parseInt(event.getView().getTitle().replace(GUI_EDIT_PREFIX, "")));
                     q.setInt(2, loop);
                     q.setString(3, Base64Item.Serialize(event.getInventory().getContents()[loop]));
                     q.setString(4, event.getInventory().getContents()[loop + 9] != null ?
@@ -110,7 +110,7 @@ public class Events implements Listener {
                     q.close();
                 }
             }
-            manager.loadTrades(Integer.parseInt(event.getView().getTitle().replace(GUIEDITPREFIX, "")));
+            MANAGER.loadTrades(Integer.parseInt(event.getView().getTitle().replace(GUI_EDIT_PREFIX, "")));
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -122,21 +122,19 @@ public class Events implements Listener {
             try {
                 Connection connection = MainCore.getSql();
                 PreparedStatement q = connection.prepareStatement("INSERT INTO `mcpg_trades_logs`" +
-                        "(`log_date`, `uuid`, `itemOne`, `qtOne`, `itemTwo`, `qtTwo`, `itemResult`, `qtResult`) " +
-                        "VALUES (?,?,?,?,?,?,?,?);");
-                q.setTimestamp(1, new java.sql.Timestamp(Calendar.getInstance().getTime().getTime()));
-                q.setString(2, event.getPlayer().getUniqueId().toString());
-                q.setString(3, event.getTrade().getItemOne().getType().toString());
-                q.setInt(4, event.getTrade().getItemOne().getAmount());
+                        "(`uuid`, `itemOne`, `qtOne`, `itemTwo`, `qtTwo`, `itemResult`, `qtResult`) VALUES (?,?,?,?,?,?,?);");
+                q.setString(1, event.getPlayer().getUniqueId().toString());
+                q.setString(2, event.getTrade().getItemOne().getType().toString());
+                q.setInt(3, event.getTrade().getItemOne().getAmount());
                 if (event.getTrade().getItemTwo() != null) {
-                    q.setString(5, event.getTrade().getItemTwo().getType().toString());
-                    q.setInt(6, event.getTrade().getItemTwo().getAmount());
+                    q.setString(4, event.getTrade().getItemTwo().getType().toString());
+                    q.setInt(5, event.getTrade().getItemTwo().getAmount());
                 } else {
-                    q.setString(5, null);
-                    q.setString(6, null);
+                    q.setNull(4, Types.NULL);
+                    q.setNull(5, Types.NULL);
                 }
-                q.setString(7, event.getTrade().getResult().getType().toString());
-                q.setInt(8, event.getTrade().getResult().getAmount());
+                q.setString(6, event.getTrade().getResult().getType().toString());
+                q.setInt(7, event.getTrade().getResult().getAmount());
                 q.execute();
                 q.close();
             } catch (SQLException throwables) {

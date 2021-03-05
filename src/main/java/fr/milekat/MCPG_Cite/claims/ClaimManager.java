@@ -8,7 +8,7 @@ import fr.milekat.MCPG_Cite.claims.events.ClaimEditor;
 import fr.milekat.MCPG_Cite.claims.events.MarketEvent;
 import fr.milekat.MCPG_Cite.claims.events.WorldProtect;
 import fr.milekat.MCPG_Cite.core.TeamManager;
-import fr.milekat.MCPG_Cite.utils.LocationParser;
+import fr.milekat.MCPG_Cite.utils.McTools;
 import fr.milekat.MCPG_Core.MainCore;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -68,17 +68,15 @@ public class ClaimManager {
             }
             if (q.getResultSet().getString("rg_blocks") != null) {
                 for (String loc : q.getResultSet().getString("rg_blocks").split(";")) {
-                    region.getBlocks().add(LocationParser.getLocation("world", loc));
-                    REGIONS_BLOCKS.put(LocationParser.getLocation("world", loc), region.getName());
+                    region.getBlocks().add(McTools.getLocation("world", loc));
+                    REGIONS_BLOCKS.put(McTools.getLocation("world", loc), region.getName());
                 }
             }
             REGIONS.put(region.getName(), region);
         }
         q.close();
     }
-    private Block getBlock(String location) {
-        return LocationParser.getLocation("world", location).getBlock();
-    }
+    private Block getBlock(String location) { return McTools.getLocation("world", location).getBlock(); }
 
     /**
      *      Récupère le nom de la région à la pos (BlockPos)

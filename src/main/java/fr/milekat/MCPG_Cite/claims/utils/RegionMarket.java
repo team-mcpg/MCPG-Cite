@@ -10,6 +10,7 @@ import fr.mrmicky.fastinv.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 
 import java.sql.Connection;
@@ -28,12 +29,12 @@ public class RegionMarket extends FastInv {
         this.team = team;
         this.region = region;
         if (sell) {
-            setItems(getBorders(), new ItemBuilder(Material.LIME_STAINED_GLASS_PANE).build());
-            setItem(4, new ItemBuilder(Material.EMERALD).addLore("Acheter", "§a" + region.getPrice()).build(),
-                    inventoryClickEvent -> buyRegion());
+            setItems(getBorders(), new ItemBuilder(Material.LIME_STAINED_GLASS_PANE).name(" ").build());
+            setItem(4, new ItemBuilder(Material.EMERALD).name(region.getName())
+                            .addLore("Acheter", "§a" + region.getPrice()).build(), inventoryClickEvent -> buyRegion());
         } else {
-            setItems(getBorders(), new ItemBuilder(Material.RED_STAINED_GLASS_PANE).build());
-            setItem(4, new ItemBuilder(Material.EMERALD).addLore("Vendre", "§a" +
+            setItems(getBorders(), new ItemBuilder(Material.RED_STAINED_GLASS_PANE).name(" ").build());
+            setItem(4, new ItemBuilder(Material.EMERALD).name(region.getName()).addLore("Vendre", "§a" +
                     Math.round((region.getPrice() * MarketEvent.FEE/100))).build(), inventoryClickEvent -> sellRegion());
         }
         open(player);
@@ -87,4 +88,7 @@ public class RegionMarket extends FastInv {
             throwables.printStackTrace();
         }
     }
+
+    @Override
+    protected void onClick(InventoryClickEvent event) { event.setCancelled(true); }
 }
