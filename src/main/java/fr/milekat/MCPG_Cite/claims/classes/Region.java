@@ -75,10 +75,10 @@ public class Region {
         sign.setLine(1, name);
         if (team != null) {
             sign.setLine(2, team.getName());
-            sign.setLine(3, MarketEvent.SOLD);
+            sign.setLine(3, MarketEvent.SELL);
         } else {
             sign.setLine(2, "§6Prix§c: §2" + price);
-            sign.setLine(3, MarketEvent.SELL);
+            sign.setLine(3, MarketEvent.BUY);
         }
         sign.update();
     }

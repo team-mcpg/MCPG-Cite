@@ -8,13 +8,15 @@ public class Team {
     private final int id;
     private final String name;
     private int money;
-    private ArrayList<OfflinePlayer> members;
+    private final ArrayList<OfflinePlayer> members;
+    private final String region;
 
-    public Team(int id, String name, int money, ArrayList<OfflinePlayer> members) {
+    public Team(int id, String name, int money, ArrayList<OfflinePlayer> members, String region) {
         this.id = id;
         this.name = name;
         this.money = money;
         this.members = members;
+        this.region = region;
     }
 
     public int getId() {
@@ -45,11 +47,7 @@ public class Team {
         this.members.add(member);
     }
 
-    public void removeMembers(OfflinePlayer member) {
-        this.members.remove(member);
-    }
-
-    public void setMembers(ArrayList<OfflinePlayer> members) {
-        this.members = members;
+    public String getRegion() {
+        return region;
     }
 }

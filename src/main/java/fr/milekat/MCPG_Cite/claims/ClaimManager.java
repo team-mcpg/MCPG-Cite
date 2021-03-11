@@ -7,7 +7,7 @@ import fr.milekat.MCPG_Cite.claims.commands.RegionCmd;
 import fr.milekat.MCPG_Cite.claims.events.ClaimEditor;
 import fr.milekat.MCPG_Cite.claims.events.MarketEvent;
 import fr.milekat.MCPG_Cite.claims.events.WorldProtect;
-import fr.milekat.MCPG_Cite.core.TeamManager;
+import fr.milekat.MCPG_Cite.core.classes.TeamManager;
 import fr.milekat.MCPG_Cite.utils.McTools;
 import fr.milekat.MCPG_Core.MainCore;
 import org.bukkit.Bukkit;
@@ -36,8 +36,8 @@ public class ClaimManager {
         plugin.getServer().getPluginManager().registerEvents(new ClaimEditor(), plugin);
         plugin.getCommand("builder").setExecutor(new BuildMode());
         plugin.getCommand("builder").setTabCompleter(new BuildMode());
-        plugin.getCommand("rg").setExecutor(new RegionCmd());
-        plugin.getCommand("rg").setTabCompleter(new RegionCmd());
+        plugin.getCommand("region").setExecutor(new RegionCmd());
+        plugin.getCommand("region").setTabCompleter(new RegionCmd());
         try {
             loadRegions();
         } catch (SQLException throwables) {

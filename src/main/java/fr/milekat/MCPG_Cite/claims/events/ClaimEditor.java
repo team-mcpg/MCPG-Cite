@@ -75,8 +75,8 @@ public class ClaimEditor implements Listener {
         Connection connection = MainCore.getSql();
         try {
             Location loc = block.getLocation();
-            PreparedStatement q = connection.prepareStatement("UPDATE `mcpg_regions` SET" +
-                    " `rg_locs`=CONCAT(IFNULL(CONCAT(`rg_locs`,';'),''),?) WHERE `rg_id`=?;");
+            PreparedStatement q = connection.prepareStatement("UPDATE `mcpg_region` SET" +
+                    " `rg_blocks`=CONCAT(IFNULL(CONCAT(`rg_blocks`,';'),''),?) WHERE `rg_id`=?;");
             q.setString(1, loc.getBlockX() + ":" + loc.getBlockY() + ":" + loc.getBlockZ());
             q.setInt(2, region.getId());
             q.execute();
@@ -97,12 +97,12 @@ public class ClaimEditor implements Listener {
         Connection connection = MainCore.getSql();
         try {
             Region region = ClaimManager.REGIONS.get(ClaimManager.REGIONS_BLOCKS.get(loc));
-            PreparedStatement q = connection.prepareStatement("SELECT `rg_locs` FROM `mcpg_regions` WHERE `rg_id` = ?;");
+            PreparedStatement q = connection.prepareStatement("SELECT `rg_blocks` FROM `mcpg_region` WHERE `rg_id` = ?;");
             q.setInt(1, region.getId());
             q.execute();
             q.getResultSet().last();
             ArrayList<String> locs =
-                    new ArrayList<>(Arrays.asList(q.getResultSet().getString("rg_locs").split(";")));
+                    new ArrayList<>(Arrays.asList(q.getResultSet().getString("rg_blocks").split(";")));
             locs.remove(loc.getBlockX() + ":" + loc.getBlockY() + ":" + loc.getBlockZ());
             String posSQL;
             if (locs.size()>0) {
@@ -116,7 +116,7 @@ public class ClaimEditor implements Listener {
                 posSQL = null;
             }
             q.close();
-            q = connection.prepareStatement("UPDATE `mcpg_regions` SET `rg_locs` = ? WHERE `rg_id` = ?;");
+            q = connection.prepareStatement("UPDATE `mcpg_region` SET `rg_blocks` = ? WHERE `rg_id` = ?;");
             q.setString(1, posSQL);
             q.setInt(2, region.getId());
             q.execute();

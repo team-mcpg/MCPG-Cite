@@ -13,8 +13,11 @@ commands:
     usage: "/builder help - for help"
     permission: "cite.claim.command.buildmode"
     permission-message: "§cAction impossible."
-  rg:
+  region:
     usage: "/region help - for help"
-    aliases: ["region"]
     permission: "cite.claim.command.region"
+    permission-message: "§cAction impossible."
+  mega:
+    usage: "/mega <price>"
+    permission: "cite.core.command.mega"
     permission-message: "§cAction impossible."

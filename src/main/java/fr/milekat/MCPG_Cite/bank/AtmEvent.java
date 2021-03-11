@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class AtmEvent implements Listener {
-    private final int BANKER = 1;
+    private final int BANKER = 0;
 
     @EventHandler
     public void onOpenAtm(NPCLeftClickEvent event) {

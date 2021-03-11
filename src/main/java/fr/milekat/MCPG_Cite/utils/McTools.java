@@ -2,7 +2,6 @@ package fr.milekat.MCPG_Cite.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -89,17 +88,14 @@ public class McTools {
     public static Location getLocation(String world, String loc) { return getFullLocation(world + ":" + loc); }
 
     /**
-     * Get how many the player has this material
+     * Get how many the player has this item stack
      */
-    public static int getAmount(Player player, Material material) {
+    public static int getAmount(Player player, ItemStack item) {
         PlayerInventory inventory = player.getInventory();
-        ItemStack[] items = inventory.getContents();
         int has = 0;
-        for (ItemStack item : items)
-        {
-            if ((item != null) && (item.getType() == material) && (item.getAmount() > 0))
-            {
-                has += item.getAmount();
+        for (ItemStack loopItem : inventory.getContents()) {
+            if ((loopItem != null) && (loopItem.isSimilar(item)) && (loopItem.getAmount() > 0)) {
+                has += loopItem.getAmount();
             }
         }
         return has;

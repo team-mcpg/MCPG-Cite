@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 
 import java.sql.Connection;
@@ -60,7 +59,7 @@ public class Events implements Listener {
      *      Editing trades GUI
      */
     private void openTradesEdit(NPC npc, Player player) {
-        Inventory inv = Bukkit.createInventory(player, InventoryType.CHEST, GUI_EDIT_PREFIX + npc.getId());
+        Inventory inv = Bukkit.createInventory(player, 54, GUI_EDIT_PREFIX + npc.getId());
         try {
             Connection connection = MainCore.getSql();
             PreparedStatement q = connection.prepareStatement(
@@ -70,11 +69,13 @@ public class Events implements Listener {
             while (q.getResultSet().next()) {
                 inv.setItem(q.getResultSet().getInt("pos"),
                         Base64Item.Deserialize(q.getResultSet().getString("itemOne")));
+                /*
                 if (q.getResultSet().getString("itemTwo")!=null) {
                     inv.setItem(q.getResultSet().getInt("pos") + 9,
                             Base64Item.Deserialize(q.getResultSet().getString("itemTwo")));
                 }
-                inv.setItem(q.getResultSet().getInt("pos") + 18,
+                */
+                inv.setItem(q.getResultSet().getInt("pos") + 9,
                         Base64Item.Deserialize(q.getResultSet().getString("result")));
             }
             q.close();
@@ -88,27 +89,38 @@ public class Events implements Listener {
     public void saveTradesEdit(InventoryCloseEvent event) {
         try {
             if (!event.getView().getTitle().startsWith(GUI_EDIT_PREFIX)) return;
-            int tradesSize = event.getInventory().firstEmpty();
-            if (tradesSize>8) tradesSize = 8;
             Connection connection = MainCore.getSql();
-            for (int loop = 0; loop <= tradesSize; loop++) {
-                if (event.getInventory().getContents()[loop+18]!=null) {
+            for (int loop = 0; loop <= 44; loop++) {
+                if (event.getView().getItem(loop)!=null && event.getView().getItem(loop + 9)!=null) {
                     PreparedStatement q = connection.prepareStatement(
                             "INSERT INTO `mcpg_trades`(`npc`, `pos`, `itemOne`, `itemTwo`, `result`) " +
                                 "VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE `itemOne` = ?, `itemTwo` = ?, `result` = ?;");
                     q.setInt(1, Integer.parseInt(event.getView().getTitle().replace(GUI_EDIT_PREFIX, "")));
                     q.setInt(2, loop);
-                    q.setString(3, Base64Item.Serialize(event.getInventory().getContents()[loop]));
-                    q.setString(4, event.getInventory().getContents()[loop + 9] != null ?
-                            Base64Item.Serialize(event.getInventory().getContents()[loop + 9]) : null);
-                    q.setString(5, Base64Item.Serialize(event.getInventory().getContents()[loop + 18]));
-                    q.setString(6, Base64Item.Serialize(event.getInventory().getContents()[loop]));
-                    q.setString(7, event.getInventory().getContents()[loop + 9] != null ?
-                            Base64Item.Serialize(event.getInventory().getContents()[loop + 9]) : null);
-                    q.setString(8, Base64Item.Serialize(event.getInventory().getContents()[loop + 18]));
+                    q.setString(3, Base64Item.Serialize(event.getView().getItem(loop)));
+                    /*
+                    q.setString(4, event.getView().getItem(loop + 9) != null ?
+                            Base64Item.Serialize(event.getView().getItem(loop + 9)) : null);
+                    */
+                    q.setNull(4, Types.NULL);
+                    q.setString(5, Base64Item.Serialize(event.getView().getItem(loop + 9)));
+                    q.setString(6, Base64Item.Serialize(event.getView().getItem(loop)));
+                    /*
+                    q.setString(7, event.getView().getItem(loop + 9) != null ?
+                            Base64Item.Serialize(event.getView().getItem(loop + 9)) : null);
+                    */
+                    q.setNull(7, Types.NULL);
+                    q.setString(8, Base64Item.Serialize(event.getView().getItem(loop + 9)));
+                    q.execute();
+                    q.close();
+                } else {
+                    PreparedStatement q = connection.prepareStatement("DELETE FROM `mcpg_trades` WHERE `npc`=? AND `pos`=?;");
+                    q.setInt(1, Integer.parseInt(event.getView().getTitle().replace(GUI_EDIT_PREFIX, "")));
+                    q.setInt(2, loop);
                     q.execute();
                     q.close();
                 }
+                if (loop==8 || loop==26) loop = loop + 9;
             }
             MANAGER.loadTrades(Integer.parseInt(event.getView().getTitle().replace(GUI_EDIT_PREFIX, "")));
         } catch (SQLException throwables) {

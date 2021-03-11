@@ -4,8 +4,8 @@ import fr.milekat.MCPG_Cite.MainCite;
 import fr.milekat.MCPG_Cite.claims.ClaimManager;
 import fr.milekat.MCPG_Cite.claims.classes.Region;
 import fr.milekat.MCPG_Cite.claims.utils.RegionMarket;
-import fr.milekat.MCPG_Cite.core.TeamManager;
 import fr.milekat.MCPG_Cite.core.classes.Team;
+import fr.milekat.MCPG_Cite.core.classes.TeamManager;
 import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,8 +16,8 @@ import java.sql.SQLException;
 
 public class MarketEvent implements Listener {
     public static final String PREFIX = "§8[§6MCPG§8]";
-    public static final String SELL = "§b*§aà vendre§b*";
-    public static final String SOLD = "§b*§cVendu§b*";
+    public static final String BUY = "§b*§aà vendre§b*";
+    public static final String SELL = "§b*§cVendu§b*";
     public static final float FEE = 80;
 
     @EventHandler
@@ -31,7 +31,11 @@ public class MarketEvent implements Listener {
         try {
             Team team = TeamManager.getTeam(event.getPlayer());
             Region region = ClaimManager.REGIONS.get(sign.getLine(1));
-            if (sign.getLine(3).equalsIgnoreCase(SELL)) {
+            if (sign.getLine(3).equalsIgnoreCase(BUY)) {
+                if (team.getRegion()!=null) {
+                    event.getPlayer().sendMessage(MainCite.PREFIX + "§cVous avez déjà une habitation !");
+                    return;
+                }
                 if (team.getMoney() >= region.getPrice()) {
                     if (event.getPlayer().isSneaking()) {
                         new RegionMarket(true, event.getPlayer(), team, region);
@@ -41,7 +45,7 @@ public class MarketEvent implements Listener {
                 } else {
                     event.getPlayer().sendMessage(MainCite.PREFIX + "§cVotre équipe n'a pas assez d'argent.");
                 }
-            } else if (sign.getLine(3).equalsIgnoreCase(SOLD)) {
+            } else if (sign.getLine(3).equalsIgnoreCase(SELL)) {
                 if (team.getId() == region.getTeam().getId()) {
                     if (event.getPlayer().isSneaking()) {
                         new RegionMarket(false, event.getPlayer(), team, region);
