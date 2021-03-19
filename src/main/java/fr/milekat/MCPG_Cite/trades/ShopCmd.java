@@ -17,10 +17,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CmdShop implements TabExecutor {
+public class ShopCmd implements TabExecutor {
     private final TradesManager manager;
 
-    public CmdShop(TradesManager manager) { this.manager = manager; }
+    public ShopCmd(TradesManager manager) { this.manager = manager; }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

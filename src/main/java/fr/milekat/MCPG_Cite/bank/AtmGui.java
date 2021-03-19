@@ -38,7 +38,7 @@ public class AtmGui extends FastInv {
             setItem(loop.getKey(), new ItemBuilder(Material.EMERALD)
                     .name("§2Déposer " + loop.getValue()).amount(loop.getValue()).build(), e -> {
                 if (e.getWhoClicked().getInventory().containsAtLeast(emerald, loop.getValue())) {
-                    process((Player) e.getWhoClicked(), loop.getValue(), new ItemStack(Material.EMERALD));
+                    emeraldsProcess((Player) e.getWhoClicked(), loop.getValue(), new ItemStack(Material.EMERALD));
                 } else {
                     e.getWhoClicked().sendMessage(MainCite.PREFIX + "§bVous n'avez pas assez d'émeraude.");
                 }
@@ -56,7 +56,7 @@ public class AtmGui extends FastInv {
             setItem(loop.getKey(), new ItemBuilder(Material.EMERALD_BLOCK)
                     .name("§2Déposer " + loop.getValue()).amount(loop.getValue()).build(), e -> {
                 if (e.getWhoClicked().getInventory().containsAtLeast(emeraldBlock, loop.getValue())) {
-                    process((Player) e.getWhoClicked(), loop.getValue(), new ItemStack(Material.EMERALD_BLOCK));
+                    emeraldsProcess((Player) e.getWhoClicked(), loop.getValue(), new ItemStack(Material.EMERALD_BLOCK));
                 } else {
                     e.getWhoClicked().sendMessage(MainCite.PREFIX + "§bVous n'avez pas assez d'émeraude.");
                 }
@@ -67,15 +67,15 @@ public class AtmGui extends FastInv {
             int e_amount = McTools.getAmount((Player) e.getWhoClicked(), new ItemStack(Material.EMERALD));
             int b_amount = McTools.getAmount((Player) e.getWhoClicked(), new ItemStack(Material.EMERALD_BLOCK));
             if (e_amount > 0) {
-                process((Player) e.getWhoClicked(), e_amount, new ItemStack(Material.EMERALD));
+                emeraldsProcess((Player) e.getWhoClicked(), e_amount, new ItemStack(Material.EMERALD));
             }
             if (b_amount > 0) {
-                process((Player) e.getWhoClicked(), b_amount * 9, new ItemStack(Material.EMERALD_BLOCK));
+                emeraldsProcess((Player) e.getWhoClicked(), b_amount * 9, new ItemStack(Material.EMERALD_BLOCK));
             }
             if (e_amount == 0 && b_amount==0 && !e.getWhoClicked().getInventory().contains(Material.EMERALD_BLOCK)) {
                 e.getWhoClicked().sendMessage(MainCite.PREFIX + "§cAucune émeraude trouvée.");
             } else {
-                megaEmeraldsProcess((Player) e.getWhoClicked());
+                emeraldsProcess((Player) e.getWhoClicked());
             }
         });
         setItem(35, new ItemBuilder(Material.BARRIER).name(ChatColor.RED + "Sortir du compte").build(),
@@ -85,9 +85,9 @@ public class AtmGui extends FastInv {
     /**
      * Process deposit ! (Remove emeralds from player inventory and add them into SQL)
      */
-    private void process(Player player, int emeralds, ItemStack item) {
+    private void emeraldsProcess(Player player, int emeralds, ItemStack item) {
         try {
-            TeamManager.setMoney(player, emeralds);
+            TeamManager.addMoney(player, emeralds);
             for (ItemStack loopItem : player.getInventory().getContents()) {
                 if (loopItem!=null && item.isSimilar(loopItem)) player.getInventory().removeItem(loopItem);
             }
@@ -101,7 +101,7 @@ public class AtmGui extends FastInv {
     /**
      * Mega Emeralds check and process
      */
-    private void megaEmeraldsProcess(Player player) {
+    private void emeraldsProcess(Player player) {
         for (ItemStack loopItem : player.getInventory().getContents()) {
             if (loopItem==null) continue;
             ItemMeta meta = loopItem.getItemMeta();
@@ -109,7 +109,7 @@ public class AtmGui extends FastInv {
                     loopItem.getEnchantments().containsKey(Enchantment.LOOT_BONUS_BLOCKS) &&
                     meta!=null && meta.getLore()!=null && meta.getLore().size()>=2) {
                 try {
-                    process(player, MainCite.df.parse(meta.getLore().get(1)).intValue() *
+                    emeraldsProcess(player, MainCite.df.parse(meta.getLore().get(1)).intValue() *
                             loopItem.getAmount(), loopItem);
                 } catch (ParseException ignore) {
                     player.sendMessage(MainCite.PREFIX + "§cItem corrompu, contact le staff pour remplacement.");

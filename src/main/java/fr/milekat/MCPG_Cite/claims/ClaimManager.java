@@ -35,7 +35,6 @@ public class ClaimManager {
         plugin.getServer().getPluginManager().registerEvents(new MarketEvent(), plugin);
         plugin.getServer().getPluginManager().registerEvents(new ClaimEditor(), plugin);
         plugin.getCommand("builder").setExecutor(new BuildMode());
-        plugin.getCommand("builder").setTabCompleter(new BuildMode());
         plugin.getCommand("region").setExecutor(new RegionCmd());
         plugin.getCommand("region").setTabCompleter(new RegionCmd());
         try {

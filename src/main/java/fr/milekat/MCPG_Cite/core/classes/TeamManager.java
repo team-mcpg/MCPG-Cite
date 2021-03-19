@@ -1,5 +1,6 @@
 package fr.milekat.MCPG_Cite.core.classes;
 
+import fr.milekat.MCPG_Cite.core.events.BankUpdate;
 import fr.milekat.MCPG_Core.MainCore;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -54,7 +55,7 @@ public class TeamManager {
         return team;
     }
 
-    public static void setMoney(Player player, int money) throws SQLException {
+    public static void addMoney(Player player, int money) throws SQLException {
         PreparedStatement q = MainCore.getSql().prepareStatement(
                 "UPDATE `mcpg_team` SET `money` = `money` + ? WHERE `team_id` = " +
                 "(SELECT `team_id` FROM `mcpg_player` WHERE `uuid` = '" + player.getUniqueId() + "');" +
@@ -64,5 +65,6 @@ public class TeamManager {
         q.setInt(3, money);
         q.execute();
         q.close();
+        Bukkit.getServer().getPluginManager().callEvent(new BankUpdate());
     }
 }

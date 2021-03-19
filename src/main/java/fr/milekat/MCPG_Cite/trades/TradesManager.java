@@ -26,9 +26,9 @@ public class TradesManager {
      */
     public TradesManager(JavaPlugin plugin) {
         CAN_TRADE = false;
-        plugin.getCommand("shop").setExecutor(new CmdShop(this));
-        plugin.getCommand("shop").setTabCompleter(new CmdShop(this));
-        plugin.getServer().getPluginManager().registerEvents(new Events(this), plugin);
+        plugin.getCommand("shop").setExecutor(new ShopCmd(this));
+        plugin.getCommand("shop").setTabCompleter(new ShopCmd(this));
+        plugin.getServer().getPluginManager().registerEvents(new ShopEvents(this), plugin);
         try {
             loadTrades();
         } catch (SQLException throwables) {
