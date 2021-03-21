@@ -4,21 +4,27 @@ import fr.milekat.MCPG_Cite.MainCite;
 import fr.milekat.MCPG_Cite.core.events.BankUpdate;
 import fr.milekat.MCPG_Cite.utils.McTools;
 import fr.milekat.MCPG_Core.MainCore;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 public class FrozenEvents implements Listener {
     @EventHandler (priority = EventPriority.LOW)
     public void onFrozenSetup(PlayerInteractEvent event) {
+        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)  || event.getHand()==null
+                || !event.getHand().equals(EquipmentSlot.OFF_HAND)) return;
         ItemStack tool = event.getPlayer().getInventory().getItemInMainHand();
         if (tool.hasItemMeta()) {
             ItemMeta meta = tool.getItemMeta();
@@ -73,7 +79,12 @@ public class FrozenEvents implements Listener {
                     q.setString(3, material.name());
                     q.execute();
                     q.close();
+                    event.getPlayer().sendMessage("§aAction ajoutée pour la phase " + phase + ".");
                 } catch (SQLException throwables) {
+                    if (throwables instanceof SQLIntegrityConstraintViolationException) {
+                        event.getPlayer().sendMessage("§cDéjà claim. /frozen reset " + phase + " pour reset la phase du block.");
+                        return;
+                    }
                     throwables.printStackTrace();
                 }
             }
@@ -89,9 +100,9 @@ public class FrozenEvents implements Listener {
                     " > (SELECT MAX(phase_step) FROM `mcpg_phases` WHERE `phase_date` IS NOT NULL) AS new_phase;");
             q.execute();
             if (q.getResultSet().next() && q.getResultSet().getBoolean("new_phase")) {
-                q = connection.prepareStatement("SELECT MAX(phase_step) as phase FROM `mcpg_phases` WHERE `phase_date` IS NULL;" +
+                q = connection.prepareStatement("SELECT MIN(phase_step) as phase FROM `mcpg_phases` WHERE `phase_date` IS NULL;" +
                         "UPDATE `mcpg_phases` SET `phase_date`=NOW() WHERE `phase_step` = " +
-                        "(SELECT MAX(phase_step) FROM `mcpg_phases` WHERE `phase_date` IS NULL);");
+                        "(SELECT MIN(phase_step) FROM `mcpg_phases` WHERE `phase_date` IS NULL);");
                 q.execute();
                 if (q.getResultSet().next()) newFrozenPhase(q.getResultSet().getInt("phase"));
             }
@@ -105,6 +116,7 @@ public class FrozenEvents implements Listener {
      * Process changes from the new Frozen Phase !
      */
     private void newFrozenPhase(int phase) throws SQLException {
+        Bukkit.getLogger().info(MainCite.PREFIX + "Nouvelle phase de dégèle, phase: " + phase);
         /* Step 1 set all blocks */
         Connection connection = MainCore.getSql();
         PreparedStatement q = connection.prepareStatement(

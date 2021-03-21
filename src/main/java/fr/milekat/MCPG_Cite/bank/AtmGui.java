@@ -38,7 +38,8 @@ public class AtmGui extends FastInv {
             setItem(loop.getKey(), new ItemBuilder(Material.EMERALD)
                     .name("§2Déposer " + loop.getValue()).amount(loop.getValue()).build(), e -> {
                 if (e.getWhoClicked().getInventory().containsAtLeast(emerald, loop.getValue())) {
-                    emeraldsProcess((Player) e.getWhoClicked(), loop.getValue(), new ItemStack(Material.EMERALD));
+                    emeraldsProcess((Player) e.getWhoClicked(), loop.getValue(),
+                            new ItemBuilder(Material.EMERALD).amount(loop.getValue()).build(), false);
                 } else {
                     e.getWhoClicked().sendMessage(MainCite.PREFIX + "§bVous n'avez pas assez d'émeraude.");
                 }
@@ -56,7 +57,8 @@ public class AtmGui extends FastInv {
             setItem(loop.getKey(), new ItemBuilder(Material.EMERALD_BLOCK)
                     .name("§2Déposer " + loop.getValue()).amount(loop.getValue()).build(), e -> {
                 if (e.getWhoClicked().getInventory().containsAtLeast(emeraldBlock, loop.getValue())) {
-                    emeraldsProcess((Player) e.getWhoClicked(), loop.getValue(), new ItemStack(Material.EMERALD_BLOCK));
+                    emeraldsProcess((Player) e.getWhoClicked(), loop.getValue() * 9,
+                            new ItemBuilder(Material.EMERALD_BLOCK).amount(loop.getValue()).build(), false);
                 } else {
                     e.getWhoClicked().sendMessage(MainCite.PREFIX + "§bVous n'avez pas assez d'émeraude.");
                 }
@@ -67,10 +69,10 @@ public class AtmGui extends FastInv {
             int e_amount = McTools.getAmount((Player) e.getWhoClicked(), new ItemStack(Material.EMERALD));
             int b_amount = McTools.getAmount((Player) e.getWhoClicked(), new ItemStack(Material.EMERALD_BLOCK));
             if (e_amount > 0) {
-                emeraldsProcess((Player) e.getWhoClicked(), e_amount, new ItemStack(Material.EMERALD));
+                emeraldsProcess((Player) e.getWhoClicked(), e_amount, new ItemStack(Material.EMERALD), true);
             }
             if (b_amount > 0) {
-                emeraldsProcess((Player) e.getWhoClicked(), b_amount * 9, new ItemStack(Material.EMERALD_BLOCK));
+                emeraldsProcess((Player) e.getWhoClicked(), b_amount * 9, new ItemStack(Material.EMERALD_BLOCK), true);
             }
             if (e_amount == 0 && b_amount==0 && !e.getWhoClicked().getInventory().contains(Material.EMERALD_BLOCK)) {
                 e.getWhoClicked().sendMessage(MainCite.PREFIX + "§cAucune émeraude trouvée.");
@@ -85,11 +87,15 @@ public class AtmGui extends FastInv {
     /**
      * Process deposit ! (Remove emeralds from player inventory and add them into SQL)
      */
-    private void emeraldsProcess(Player player, int emeralds, ItemStack item) {
+    private void emeraldsProcess(Player player, int emeralds, ItemStack item, boolean full) {
         try {
             TeamManager.addMoney(player, emeralds);
-            for (ItemStack loopItem : player.getInventory().getContents()) {
-                if (loopItem!=null && item.isSimilar(loopItem)) player.getInventory().removeItem(loopItem);
+            if (full) {
+                for (ItemStack loopItem : player.getInventory().getContents()) {
+                    if (loopItem!=null && item.isSimilar(loopItem)) player.getInventory().removeItem(loopItem);
+                }
+            } else {
+                player.getInventory().removeItem(item);
             }
             player.sendMessage(MainCite.PREFIX + "§6Tu as déposé §b" + MainCite.df.format(emeralds) + " §bémeraudes§c.");
         } catch (SQLException throwables) {
@@ -110,7 +116,7 @@ public class AtmGui extends FastInv {
                     meta!=null && meta.getLore()!=null && meta.getLore().size()>=2) {
                 try {
                     emeraldsProcess(player, MainCite.df.parse(meta.getLore().get(1)).intValue() *
-                            loopItem.getAmount(), loopItem);
+                            loopItem.getAmount(), loopItem, true);
                 } catch (ParseException ignore) {
                     player.sendMessage(MainCite.PREFIX + "§cItem corrompu, contact le staff pour remplacement.");
                 }
