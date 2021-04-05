@@ -1,6 +1,6 @@
 package fr.milekat.MCPG_Cite.core.classes;
 
-import fr.milekat.MCPG_Cite.core.events.BankUpdate;
+import fr.milekat.MCPG_Cite.frozen.FrozenBank;
 import fr.milekat.MCPG_Core.MainCore;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class TeamManager {
-
     /**
      * Retrieve team of player
      */
@@ -65,6 +64,6 @@ public class TeamManager {
         q.setInt(3, money);
         q.execute();
         q.close();
-        Bukkit.getServer().getPluginManager().callEvent(new BankUpdate());
+        Bukkit.getServer().getPluginManager().callEvent(new FrozenBank());
     }
 }

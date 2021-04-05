@@ -1,10 +1,7 @@
 package fr.milekat.MCPG_Cite.frozen;
 
-import fr.milekat.MCPG_Cite.MainCite;
-import fr.milekat.MCPG_Cite.core.events.BankUpdate;
 import fr.milekat.MCPG_Cite.utils.McTools;
 import fr.milekat.MCPG_Core.MainCore;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -80,19 +77,19 @@ public class FrozenEvents implements Listener {
                     q.execute();
                     q.close();
                     event.getPlayer().sendMessage("§aAction ajoutée pour la phase " + phase + ".");
-                } catch (SQLException throwables) {
-                    if (throwables instanceof SQLIntegrityConstraintViolationException) {
+                } catch (SQLException throwable) {
+                    if (throwable instanceof SQLIntegrityConstraintViolationException) {
                         event.getPlayer().sendMessage("§cDéjà claim. /frozen reset " + phase + " pour reset la phase du block.");
                         return;
                     }
-                    throwables.printStackTrace();
+                    throwable.printStackTrace();
                 }
             }
         }
     }
 
     @EventHandler
-    public void depositListener(BankUpdate event) {
+    public void depositListener(FrozenBank event) {
         try {
             Connection connection = MainCore.getSql();
             PreparedStatement q = connection.prepareStatement("SELECT " +
@@ -104,31 +101,11 @@ public class FrozenEvents implements Listener {
                         "UPDATE `mcpg_phases` SET `phase_date`=NOW() WHERE `phase_step` = " +
                         "(SELECT MIN(phase_step) FROM `mcpg_phases` WHERE `phase_date` IS NULL);");
                 q.execute();
-                if (q.getResultSet().next()) newFrozenPhase(q.getResultSet().getInt("phase"));
+                if (q.getResultSet().next()) FrozenUtils.newFrozenPhase(q.getResultSet().getInt("phase"));
             }
             q.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-    }
-
-    /**
-     * Process changes from the new Frozen Phase !
-     */
-    private void newFrozenPhase(int phase) throws SQLException {
-        Bukkit.getLogger().info(MainCite.PREFIX + "Nouvelle phase de dégèle, phase: " + phase);
-        /* Step 1 set all blocks */
-        Connection connection = MainCore.getSql();
-        PreparedStatement q = connection.prepareStatement(
-                "SELECT `location`, `material` FROM `mcpg_phases_blocks` WHERE `phase` = ?;");
-        q.setInt(1, phase);
-        q.execute();
-        while (q.getResultSet().next()) {
-            Material material = Material.getMaterial(q.getResultSet().getString("material"));
-            if (material==null) material = Material.AIR;
-            McTools.getFullLocation(q.getResultSet().getString("location")).getBlock().setType(material);
-        }
-        /* Update NPC trades */
-        MainCite.getTrades().loadTrades();
     }
 }

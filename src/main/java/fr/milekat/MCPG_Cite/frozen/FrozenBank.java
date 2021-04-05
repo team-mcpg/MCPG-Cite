@@ -1,14 +1,14 @@
-package fr.milekat.MCPG_Cite.core.events;
+package fr.milekat.MCPG_Cite.frozen;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import javax.annotation.Nonnull;
 
-public class BankUpdate extends Event {
+public class FrozenBank extends Event {
     private static final HandlerList handlers = new HandlerList();
 
-    public BankUpdate() {
+    public FrozenBank() {
 
     }
 

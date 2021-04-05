@@ -11,7 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.text.DecimalFormat;
 
 public class MainCite extends JavaPlugin {
-    public static String PREFIX = "§8[§6MCPG§8]§r ";
+    public static String PREFIX = "§7[§bLa Cité Givrée§7]§r ";
     public static final DecimalFormat df = new DecimalFormat("#,##0;");
     private static TradesManager trades;
 

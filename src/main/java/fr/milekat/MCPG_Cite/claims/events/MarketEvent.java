@@ -15,7 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.sql.SQLException;
 
 public class MarketEvent implements Listener {
-    public static final String PREFIX = "§8[§6MCPG§8]";
+    public static final String PREFIX = "§7[§bLa Cité Givrée§7]";
     public static final String BUY = "§b*§aà vendre§b*";
     public static final String SELL = "§b*§cVendu§b*";
     public static final float FEE = 80;
@@ -56,9 +56,9 @@ public class MarketEvent implements Listener {
                     event.getPlayer().sendMessage(MainCite.PREFIX + "§cVotre équipe n'est pas propriétaire de la région.");
                 }
             }
-        } catch (SQLException throwables) {
+        } catch (SQLException throwable) {
             event.getPlayer().sendMessage(MainCite.PREFIX + "§cErreur internet, contact le staff.");
-            throwables.printStackTrace();
+            throwable.printStackTrace();
         }
     }
 }

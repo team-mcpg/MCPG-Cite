@@ -60,7 +60,7 @@ public class TradesManager {
     public void loadTrades(int npc_id) throws SQLException {
         Connection connection = MainCore.getSql();
         PreparedStatement q = connection.prepareStatement("SELECT * FROM `mcpg_trades` WHERE `npc` = ? " +
-                "AND `phase` <= (SELECT MAX(`phase_step`) FROM `mcpg_phases`) ORDER BY `pos`;");
+                "AND `phase` <= (SELECT MAX(`phase_step`) FROM `mcpg_phases`  WHERE phase_date IS NOT NULL) ORDER BY `pos`;");
         q.setInt(1, npc_id);
         q.execute();
         this.TRADES.remove(npc_id);

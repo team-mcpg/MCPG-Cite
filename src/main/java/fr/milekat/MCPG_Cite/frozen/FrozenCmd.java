@@ -31,7 +31,7 @@ public class FrozenCmd implements CommandExecutor {
                 player.getInventory().setItem(7, new ItemBuilder(Material.DIAMOND_PICKAXE).addLore("Frozen").build());
             } else sender.sendMessage(MainCite.PREFIX + "§cVous devez être en /builder + créatif !");
         } else if (args.length == 2 && args[0].equalsIgnoreCase("reset")) {
-            if (player.getTargetBlockExact(6)==null) {
+            if (player.getTargetBlockExact(6) == null) {
                 sender.sendMessage(MainCite.PREFIX + "§cAucun block trouvé, rapprochez vous.");
                 return true;
             }
@@ -49,6 +49,20 @@ public class FrozenCmd implements CommandExecutor {
             } catch (NumberFormatException throwables) {
                 sendHelp(sender, label);
             }
+        } else if (args.length == 1 && args[0].equalsIgnoreCase("skip")) {
+            try {
+                Connection connection = MainCore.getSql();
+                PreparedStatement q = connection.prepareStatement(
+                        "SELECT MIN(phase_step) as phase FROM `mcpg_phases` WHERE `phase_date` IS NULL;" +
+                        "UPDATE `mcpg_phases` SET `phase_date`=NOW() WHERE `phase_step` = " +
+                        "(SELECT MIN(phase_step) FROM `mcpg_phases` WHERE `phase_date` IS NULL);");
+                q.execute();
+                if (q.getResultSet().next()) FrozenUtils.newFrozenPhase(q.getResultSet().getInt("phase"));
+                sender.sendMessage(MainCite.PREFIX + "§6New phase: §b" + q.getResultSet().getInt("phase"));
+                q.close();
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
+            }
         } else sendHelp(sender, label);
         return true;
     }
@@ -58,6 +72,7 @@ public class FrozenCmd implements CommandExecutor {
      */
     private void sendHelp(CommandSender sender, String lbl) {
         sender.sendMessage("§6/" + lbl + " help:§r Obtenir de l'aide sur la commande.");
+        sender.sendMessage("§6/" + lbl + " skip:§r Skip the current phase, without emeralds count.");
         sender.sendMessage("§6/" + lbl + " tools:§r Add all tools in your inventory.");
         sender.sendMessage("§6/" + lbl + " reset <phase>:§r Reset phase action from the targeted block.");
     }

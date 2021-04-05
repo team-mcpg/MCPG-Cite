@@ -98,9 +98,9 @@ public class AtmGui extends FastInv {
                 player.getInventory().removeItem(item);
             }
             player.sendMessage(MainCite.PREFIX + "§6Tu as déposé §b" + MainCite.df.format(emeralds) + " §bémeraudes§c.");
-        } catch (SQLException throwables) {
+        } catch (SQLException throwable) {
             player.sendMessage(MainCite.PREFIX + "§cError, contact un admin.");
-            throwables.printStackTrace();
+            throwable.printStackTrace();
         }
     }
 
