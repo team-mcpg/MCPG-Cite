@@ -22,11 +22,11 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Events implements Listener {
+public class ShopEvents implements Listener {
     private final TradesManager MANAGER;
     private final String GUI_EDIT_PREFIX = "§c[EDIT] ";
 
-    public Events(TradesManager manager) { this.MANAGER = manager; }
+    public ShopEvents(TradesManager manager) { this.MANAGER = manager; }
 
     @EventHandler
     public void onNpcClick(NPCRightClickEvent event) {

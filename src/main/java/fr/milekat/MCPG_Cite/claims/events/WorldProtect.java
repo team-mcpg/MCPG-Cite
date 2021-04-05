@@ -125,6 +125,7 @@ public class WorldProtect implements Listener {
         if (!event.getPlayer().getOpenInventory().getType().equals(InventoryType.MERCHANT)) {
             if (!ClaimManager.BUILDER.contains(event.getPlayer())) {
                 event.setCancelled(true);
+                denyMsg(event.getPlayer());
             }
         }
     }

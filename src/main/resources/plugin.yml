@@ -7,17 +7,21 @@ depend: [MCPG-Core, Citizens, ProtocolLib, VillagerGUIApi, WorldEdit]
 commands:
   shop:
     usage: "/shop help - for help"
-    permission: "cite.shop.command.shop"
+    permission: "modo.shop.command.shop"
     permission-message: "§cAction impossible."
   builder:
-    usage: "/builder help - for help"
-    permission: "cite.claim.command.buildmode"
+    usage: "/builder"
+    permission: "modo.claim.command.buildmode"
     permission-message: "§cAction impossible."
   region:
     usage: "/region help - for help"
-    permission: "cite.claim.command.region"
+    permission: "modo.claim.command.region"
     permission-message: "§cAction impossible."
   mega:
     usage: "/mega <price>"
-    permission: "cite.core.command.mega"
+    permission: "modo.core.command.mega"
+    permission-message: "§cAction impossible."
+  frozen:
+    usage: "/frozen help - for help"
+    permission: "modo.frozen.command.frozen"
     permission-message: "§cAction impossible."

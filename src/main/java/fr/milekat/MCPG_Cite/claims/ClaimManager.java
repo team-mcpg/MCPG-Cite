@@ -35,7 +35,6 @@ public class ClaimManager {
         plugin.getServer().getPluginManager().registerEvents(new MarketEvent(), plugin);
         plugin.getServer().getPluginManager().registerEvents(new ClaimEditor(), plugin);
         plugin.getCommand("builder").setExecutor(new BuildMode());
-        plugin.getCommand("builder").setTabCompleter(new BuildMode());
         plugin.getCommand("region").setExecutor(new RegionCmd());
         plugin.getCommand("region").setTabCompleter(new RegionCmd());
         try {
@@ -63,8 +62,12 @@ public class ClaimManager {
             if (q.getResultSet().getInt("team_id") != 0) {
                 region.setTeam(TeamManager.getTeam(q.getResultSet().getInt("team_id")));
             }
-            if (q.getResultSet().getString("rg_sign") != null) {
-                region.setSign((Sign) getBlock(q.getResultSet().getString("rg_sign")).getState());
+            try {
+                if (q.getResultSet().getString("rg_sign") != null) {
+                    region.setSign((Sign) getBlock(q.getResultSet().getString("rg_sign")).getState());
+                }
+            } catch (ClassCastException ignore) {
+                Bukkit.getLogger().warning("Sign error: " + q.getResultSet().getString("rg_sign"));
             }
             if (q.getResultSet().getString("rg_blocks") != null) {
                 for (String loc : q.getResultSet().getString("rg_blocks").split(";")) {
@@ -96,7 +99,7 @@ public class ClaimManager {
     public static boolean canTeleportHere(Location location, Player player) {
         if (BUILDER.contains(player)) return true;
         Region region = getRegion(location);
-        if (region == null || region.getName().equalsIgnoreCase("interact-ok")) return false;
+        if (region == null || region.getName().equalsIgnoreCase("throwable")) return false;
         return canBuild(location, player);
     }
 

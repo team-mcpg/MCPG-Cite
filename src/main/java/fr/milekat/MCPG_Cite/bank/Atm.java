@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-public class AtmEvent implements Listener {
+public class Atm implements Listener {
     private final int BANKER = 0;
 
     @EventHandler
