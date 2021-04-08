@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.sql.SQLException;
 
 public class MarketEvent implements Listener {
-    public static final String PREFIX = "§7[§bLa Cité Givrée§7]";
     public static final String BUY = "§b*§aà vendre§b*";
     public static final String SELL = "§b*§cVendu§b*";
     public static final float FEE = 80;
@@ -26,7 +25,7 @@ public class MarketEvent implements Listener {
         if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
         if (!(event.getClickedBlock().getState() instanceof Sign)) return;
         Sign sign = (Sign) event.getClickedBlock().getState();
-        if (!sign.getLine(0).equalsIgnoreCase(PREFIX)) return;
+        if (!sign.getLine(0).equalsIgnoreCase(MainCite.PREFIX)) return;
         event.setCancelled(true);
         try {
             Team team = TeamManager.getTeam(event.getPlayer());

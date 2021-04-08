@@ -1,4 +1,4 @@
-package fr.milekat.MCPG_Cite.bank;
+package fr.milekat.MCPG_Cite.bank.utils;
 
 import fr.milekat.MCPG_Cite.MainCite;
 import fr.milekat.MCPG_Cite.core.classes.TeamManager;
@@ -19,11 +19,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-public class AtmGui extends FastInv {
+public class Gui extends FastInv {
     private final ItemStack emerald = new ItemStack(Material.EMERALD);
     private final ItemStack emeraldBlock = new ItemStack(Material.EMERALD_BLOCK);
 
-    public AtmGui() {
+    public Gui() {
         super(36, "§2[Banque] Effectuer un dépot");
         setItems(IntStream.range(0, 35).toArray(), new ItemBuilder(Material.LIME_STAINED_GLASS_PANE).name("§2Dépot").build());
         //  Emeralds
@@ -97,7 +97,7 @@ public class AtmGui extends FastInv {
             } else {
                 player.getInventory().removeItem(item);
             }
-            player.sendMessage(MainCite.PREFIX + "§6Tu as déposé §b" + MainCite.df.format(emeralds) + " §bémeraudes§c.");
+            player.sendMessage(MainCite.PREFIX + "§6Tu as déposé §b" + MainCite.DECIMAL_FORMAT.format(emeralds) + " §bémeraudes§c.");
         } catch (SQLException throwable) {
             player.sendMessage(MainCite.PREFIX + "§cError, contact un admin.");
             throwable.printStackTrace();
@@ -115,7 +115,7 @@ public class AtmGui extends FastInv {
                     loopItem.getEnchantments().containsKey(Enchantment.LOOT_BONUS_BLOCKS) &&
                     meta!=null && meta.getLore()!=null && meta.getLore().size()>=2) {
                 try {
-                    emeraldsProcess(player, MainCite.df.parse(meta.getLore().get(1)).intValue() *
+                    emeraldsProcess(player, MainCite.DECIMAL_FORMAT.parse(meta.getLore().get(1)).intValue() *
                             loopItem.getAmount(), loopItem, true);
                 } catch (ParseException ignore) {
                     player.sendMessage(MainCite.PREFIX + "§cItem corrompu, contact le staff pour remplacement.");

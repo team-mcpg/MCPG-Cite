@@ -48,13 +48,13 @@ public class MegaEmerald implements Listener {
                         event.getCurrentItem().getEnchantments().containsKey(Enchantment.LOOT_BONUS_BLOCKS)) {
                     ItemMeta metaCurrent = event.getCurrentItem().getItemMeta();
                     if (metaCurrent!=null && metaCurrent.getLore()!=null && metaCurrent.getLore().size()>=2) {
-                        emeralds = MainCite.df.parse(metaCurrent.getLore().get(1)).intValue() *
+                        emeralds = MainCite.DECIMAL_FORMAT.parse(metaCurrent.getLore().get(1)).intValue() *
                                 event.getCurrentItem().getAmount();
                     }
                 }
                 if (metaCursor!=null && metaCursor.getLore()!=null && metaCursor.getLore().size()>=2) {
                     event.setCancelled(true);
-                    emeralds = MainCite.df.parse(metaCursor.getLore().get(1)).intValue() * event.getCursor().getAmount() +
+                    emeralds = MainCite.DECIMAL_FORMAT.parse(metaCursor.getLore().get(1)).intValue() * event.getCursor().getAmount() +
                             emeralds;
                     event.getWhoClicked().setItemOnCursor(null);
                     event.setCurrentItem(generateMegaEmerald(String.valueOf(emeralds)));
@@ -70,7 +70,7 @@ public class MegaEmerald implements Listener {
      public static ItemStack generateMegaEmerald(String emeralds) {
         return new ItemBuilder(Material.EMERALD_BLOCK)
                 .name("§rMéga Émeraude").addLore("§r§6Valeur en banque§c:")
-                .addLore(MainCite.df.format(Integer.parseInt(emeralds)))
+                .addLore(MainCite.DECIMAL_FORMAT.format(Integer.parseInt(emeralds)))
                 .enchant(Enchantment.LOOT_BONUS_BLOCKS, 10).flags(ItemFlag.HIDE_ENCHANTS).build();
     }
 }

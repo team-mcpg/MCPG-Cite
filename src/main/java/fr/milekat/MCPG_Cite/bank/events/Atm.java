@@ -1,5 +1,6 @@
-package fr.milekat.MCPG_Cite.bank;
+package fr.milekat.MCPG_Cite.bank.events;
 
+import fr.milekat.MCPG_Cite.bank.utils.Gui;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import org.bukkit.entity.Player;
@@ -19,5 +20,5 @@ public class Atm implements Listener {
         if (event.getNPC().getId() == BANKER) openAtm(event.getClicker());
     }
 
-    private void openAtm(Player player) { new AtmGui().open(player); }
+    private void openAtm(Player player) { new Gui().open(player); }
 }

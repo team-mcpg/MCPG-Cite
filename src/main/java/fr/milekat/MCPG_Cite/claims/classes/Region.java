@@ -1,5 +1,6 @@
 package fr.milekat.MCPG_Cite.claims.classes;
 
+import fr.milekat.MCPG_Cite.MainCite;
 import fr.milekat.MCPG_Cite.claims.events.MarketEvent;
 import fr.milekat.MCPG_Cite.core.classes.Team;
 import org.bukkit.Location;
@@ -71,7 +72,7 @@ public class Region {
     }
 
     private void updateSign() {
-        sign.setLine(0, MarketEvent.PREFIX);
+        sign.setLine(0, MainCite.PREFIX);
         sign.setLine(1, name);
         if (team != null) {
             sign.setLine(2, team.getName());
