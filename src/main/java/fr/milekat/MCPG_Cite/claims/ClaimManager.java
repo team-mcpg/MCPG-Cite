@@ -6,6 +6,7 @@ import fr.milekat.MCPG_Cite.claims.commands.BuildMode;
 import fr.milekat.MCPG_Cite.claims.commands.RegionCmd;
 import fr.milekat.MCPG_Cite.claims.events.ClaimEditor;
 import fr.milekat.MCPG_Cite.claims.events.MarketEvent;
+import fr.milekat.MCPG_Cite.claims.events.ServerSwitch;
 import fr.milekat.MCPG_Cite.claims.events.WorldProtect;
 import fr.milekat.MCPG_Cite.core.classes.TeamManager;
 import fr.milekat.MCPG_Cite.utils.McTools;
@@ -34,6 +35,8 @@ public class ClaimManager {
         plugin.getServer().getPluginManager().registerEvents(new WorldProtect(), plugin);
         plugin.getServer().getPluginManager().registerEvents(new MarketEvent(), plugin);
         plugin.getServer().getPluginManager().registerEvents(new ClaimEditor(), plugin);
+        plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
+        plugin.getServer().getPluginManager().registerEvents(new ServerSwitch(plugin), plugin);
         plugin.getCommand("builder").setExecutor(new BuildMode());
         plugin.getCommand("region").setExecutor(new RegionCmd());
         plugin.getCommand("region").setTabCompleter(new RegionCmd());

@@ -44,9 +44,9 @@ public class FrozenCmd implements CommandExecutor {
                 q.execute();
                 q.close();
                 player.sendMessage("§aReset de " + McTools.getFullString(player.getTargetBlockExact(6).getLocation()) + ".");
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            } catch (NumberFormatException throwables) {
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
+            } catch (NumberFormatException throwable) {
                 sendHelp(sender, label);
             }
         } else if (args.length == 1 && args[0].equalsIgnoreCase("skip")) {
@@ -63,6 +63,20 @@ public class FrozenCmd implements CommandExecutor {
             } catch (SQLException throwable) {
                 throwable.printStackTrace();
             }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("set")) {
+            try {
+                Connection connection = MainCore.getSql();
+                PreparedStatement q = connection.prepareStatement(
+                        "UPDATE `mcpg_phases` SET `phase_date`= NULL WHERE `phase_step` >= ?;");
+                q.setInt(1, Integer.parseInt(args[1]));
+                q.execute();
+                sender.sendMessage(MainCite.PREFIX + "§Phase set to §b" + Integer.parseInt(args[1]) + "§r with no update.");
+                q.close();
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
+            } catch (NumberFormatException ignore) {
+                sender.sendMessage(MainCite.PREFIX + "§cThe phase must be a digit between 0-9.");
+            }
         } else sendHelp(sender, label);
         return true;
     }
@@ -73,6 +87,7 @@ public class FrozenCmd implements CommandExecutor {
     private void sendHelp(CommandSender sender, String lbl) {
         sender.sendMessage("§6/" + lbl + " help:§r Obtenir de l'aide sur la commande.");
         sender.sendMessage("§6/" + lbl + " skip:§r Skip the current phase, without emeralds count.");
+        sender.sendMessage("§6/" + lbl + " set <phase>:§r Redefine the phase, without emeralds count.");
         sender.sendMessage("§6/" + lbl + " tools:§r Add all tools in your inventory.");
         sender.sendMessage("§6/" + lbl + " reset <phase>:§r Reset phase action from the targeted block.");
     }

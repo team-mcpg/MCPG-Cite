@@ -88,6 +88,18 @@ public class McTools {
     public static Location getLocation(String world, String loc) { return getFullLocation(world + ":" + loc); }
 
     /**
+     * Check if loc is between 2 locations
+     */
+    public static boolean inArea(Location loc, Location max, Location min) {
+        //  X
+        if (loc.getX() > max.getX() || loc.getX() < min.getX()) return false;
+        //  Y
+        if (loc.getY() > max.getY() || loc.getY() < min.getY()) return false;
+        //  Z
+        return !(loc.getZ() > max.getZ() || loc.getZ() < min.getZ());
+    }
+
+    /**
      * Get how many the player has this item stack
      */
     public static int getAmount(Player player, ItemStack item) {
