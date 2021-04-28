@@ -33,7 +33,8 @@ public class ClaimManager {
         plugin.getServer().getPluginManager().registerEvents(new MarketEvent(), plugin);
         plugin.getServer().getPluginManager().registerEvents(new ClaimEditor(), plugin);
         plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
-        plugin.getServer().getPluginManager().registerEvents(new ServerSwitch(plugin), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new SendSurvival(plugin), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new SendEvent(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new MageTower(), plugin);
         plugin.getCommand("builder").setExecutor(new BuildMode());
         plugin.getCommand("region").setExecutor(new RegionCmd());

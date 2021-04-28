@@ -253,7 +253,9 @@ public class WorldProtect implements Listener {
 
     @EventHandler (ignoreCancelled = true)
     public void onSaturation(FoodLevelChangeEvent event) {
-        event.setCancelled(true);
+        if (event.getEntity().getFoodLevel() > event.getFoodLevel()) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler (ignoreCancelled = true)

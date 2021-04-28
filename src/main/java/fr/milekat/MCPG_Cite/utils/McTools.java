@@ -5,16 +5,19 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.plugin.Plugin;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 public class McTools {
-    public static String getArgs(Integer skipedargs, String... args) {
+    public static String getArgs(Integer skipped_args, String... args) {
         StringBuilder sb = new StringBuilder();
         int loop = 1;
         for (String string : args) {
-            if (loop <= skipedargs) continue;
+            if (loop <= skipped_args) continue;
             sb.append(string);
             sb.append(" ");
             loop++;
@@ -103,9 +106,8 @@ public class McTools {
      * Get how many the player has this item stack
      */
     public static int getAmount(Player player, ItemStack item) {
-        PlayerInventory inventory = player.getInventory();
         int has = 0;
-        for (ItemStack loopItem : inventory.getContents()) {
+        for (ItemStack loopItem : player.getInventory().getContents()) {
             if ((loopItem != null) && (loopItem.isSimilar(item)) && (loopItem.getAmount() > 0)) {
                 has += loopItem.getAmount();
             }
@@ -126,5 +128,16 @@ public class McTools {
             if (!map.isEmpty()) return false; // If not empty, it means the player's inventory is full.
         }
         return true;
+    }
+
+    /**
+     * Send player to server
+     */
+    public static void sendPlayerToServer(Plugin plugin, Player player, String server) throws IOException {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+        out.writeUTF("Connect");
+        out.writeUTF(server);
+        player.sendPluginMessage(plugin, "BungeeCord", b.toByteArray());
     }
 }

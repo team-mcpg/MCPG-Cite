@@ -5,7 +5,6 @@ import fr.milekat.MCPG_Core.MainCore;
 import masecla.villager.classes.VillagerInventory;
 import masecla.villager.classes.VillagerTrade;
 import masecla.villager.events.VillagerTradeCompleteEvent;
-import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
@@ -35,9 +34,6 @@ public class ShopEvents implements Listener {
             openTradesEdit(event.getNPC(), event.getClicker());
         } else openTradesVillager(event.getNPC(), event.getClicker());
     }
-
-    @EventHandler
-    public void onNpcClick(NPCLeftClickEvent event) { openTradesVillager(event.getNPC(), event.getClicker()); }
 
     /**
      *      Open Trade Gui for player
@@ -79,8 +75,8 @@ public class ShopEvents implements Listener {
                         Base64Item.Deserialize(q.getResultSet().getString("result")));
             }
             q.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
         player.openInventory(inv);
     }
@@ -149,8 +145,8 @@ public class ShopEvents implements Listener {
                 q.setInt(7, event.getTrade().getResult().getAmount());
                 q.execute();
                 q.close();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
             }
         }
     }

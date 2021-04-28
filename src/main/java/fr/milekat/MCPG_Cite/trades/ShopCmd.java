@@ -39,11 +39,11 @@ public class ShopCmd implements TabExecutor {
                 manager.loadTrades();
                 sender.sendMessage(MainCite.PREFIX + "Trades updated !");
             } else sendHelp(sender, label);
-        } catch (SQLException throwables) {
+        } catch (SQLException throwable) {
             sender.sendMessage(MainCite.PREFIX + "§cSQL error, check console.");
-            sender.sendMessage(throwables.getMessage());
-            throwables.printStackTrace();
-        } catch (NumberFormatException throwables) {
+            sender.sendMessage(throwable.getMessage());
+            throwable.printStackTrace();
+        } catch (NumberFormatException throwable) {
             sender.sendMessage(MainCite.PREFIX + "§cErreur de format.");
             sendHelp(sender, label);
         }

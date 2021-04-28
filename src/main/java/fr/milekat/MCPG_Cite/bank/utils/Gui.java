@@ -94,6 +94,10 @@ public class Gui extends FastInv {
                 for (ItemStack loopItem : player.getInventory().getContents()) {
                     if (loopItem!=null && item.isSimilar(loopItem)) player.getInventory().removeItem(loopItem);
                 }
+                if (player.getInventory().getItemInOffHand().getType().equals(Material.EMERALD) ||
+                        player.getInventory().getItemInOffHand().getType().equals(Material.EMERALD_BLOCK)) {
+                    player.getInventory().setItemInOffHand(null);
+                }
             } else {
                 player.getInventory().removeItem(item);
             }
